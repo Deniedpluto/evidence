@@ -47,7 +47,9 @@ SELECT
     ,Elo
     ,WRA AS "Win Rate Against"
     ,STR AS Strength
+    ,Weight
     ,"Bayes STR" AS "Adjusted Strength"
+    ,"Norm Bayes STR" AS "Standardized Strength"
 FROM Commander_Decks.CommanderDecksWRA
 WHERE Played > ${inputs.mingames}
   AND Owner IN ${inputs.Owner.value};
@@ -61,6 +63,7 @@ WHERE Played > ${inputs.mingames}
     <Column id="Win Rate" fmt = "##.0%"/>
     <Column id=Elo/>
     <Column id="Win Rate Against" fmt = "##.0%"/>
+    <Column id=Weight/>
     <Column id=Strength/>
-    <Column id="Adjusted Strength"/>
+    <Column id="Standardized Strength" fmt = "#.0"/>
 </DataTable>
