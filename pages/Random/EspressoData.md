@@ -42,6 +42,7 @@ GROUP BY Roast
     <Column id=Roast/>
     <Column id="Bags"/>
     <Column id="Grinds"/>
+    <Column id="Freshness" fmt="#.0"/>
     <Column id="Median Grind" fmt="#.0"/>
     <Column id="Recommended Grind" fmt="#.0"/>
     <Column id="Average Shot Time"/>
@@ -57,12 +58,37 @@ GROUP BY Roast
 </DataTable>
 
 ```ShotQuality
-SELECT "Shot Quality"
-    ,COUNT("Shot Quality") AS Shots
-    ,Roast
-FROM ${EspressoData}
-WHERE Roast <> 'Event'
-GROUP BY "Shot Quality", Roast
+SELECT A."Shot Quality"
+    ,CASE A."Shot Quality" WHEN 'Great' THEN 1
+                           WHEN 'Good' THEN 2
+                           WHEN 'Okay' THEN 3
+                           WHEN 'Poor' THEN 4
+                           ELSE 5 END AS "Shot Quality Order" 
+    ,COUNT(A."Shot Quality") AS Shots
+    ,B.TotalShots
+    ,COUNT(A."Shot Quality")/B.TotalShots AS ShotRatio
+    ,A.Roast
+FROM ${EspressoData} AS A
+JOIN (SELECT Roast, COUNT(Roast) AS TotalShots FROM ${EspressoData} GROUP BY Roast) AS B ON A.Roast = B.Roast
+WHERE A.Roast <> 'Event'
+  AND A."Shot Quality" IS NOT NULL
+GROUP BY A."Shot Quality", A.Roast, B.TotalShots
+ORDER BY "Shot Quality Order";
 ```
 
-<BarChart data={ShotQuality} x="Shot Quality" y=Shots series=Roast title="Great Shot Rate by Roast" xtitle="Shot Quality" ytitle="Grinds" />
+<BarChart data={ShotQuality}
+    sort="Shot Quality Order"
+    x=Roast 
+    y=ShotRatio 
+    series="Shot Quality"
+    type=stacked100
+    swapXY=true 
+    title="Shot Quality Distribution by Roast" 
+    xtitle="Shot Quality" 
+    ytitle="Grinds" 
+    colorPalette={[
+        '#09814a',
+        '#7CE577',
+        '#a3b9c9',
+        '#8c271e',
+        ]}/>
