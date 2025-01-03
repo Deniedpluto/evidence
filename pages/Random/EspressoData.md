@@ -13,6 +13,7 @@ Starting in August of 2024, I decided it was time to take my espresso making to 
 ```EspressoData
 SELECT *
     ,date_diff('day', "Roast Date", "Shot Date") AS Freshness
+    ,ROW_NUMBER() OVER() AS "Shot Number"
 FROM EspressoData.EspressoData
 ```
 
@@ -59,10 +60,10 @@ GROUP BY Roast
 
 ```ShotQuality
 SELECT A."Shot Quality"
-    ,CASE A."Shot Quality" WHEN 'Great' THEN 1
-                           WHEN 'Good' THEN 2
-                           WHEN 'Okay' THEN 3
-                           WHEN 'Poor' THEN 4
+    ,CASE A."Shot Quality" WHEN 'Great' THEN 4
+                           WHEN 'Good' THEN 3
+                           WHEN 'Okay' THEN 2
+                           WHEN 'Poor' THEN 1
                            ELSE 5 END AS "Shot Quality Order" 
     ,COUNT(A."Shot Quality") AS Shots
     ,B.TotalShots
@@ -77,7 +78,7 @@ ORDER BY "Shot Quality Order";
 ```
 
 <BarChart data={ShotQuality}
-    sort="Shot Quality Order"
+    sort="Shot Quality Order desc"
     x=Roast 
     y=ShotRatio 
     series="Shot Quality"
@@ -92,3 +93,23 @@ ORDER BY "Shot Quality Order";
         '#a3b9c9',
         '#8c271e',
         ]}/>
+
+```ShotsOnly
+SELECT * FROM ${EspressoData}
+WHERE "Shot Quality" IS NOT NULL
+  AND Roast <> 'Event';
+```
+
+<ScatterPlot data={ShotsOnly}
+    sory="Shot Quality Order desc"
+    x="Shot Number"
+    y="Freshness"
+    series="Shot Quality"
+    title="Freshness Over Time"
+      colorPalette={[
+        '#09814a',
+        '#7CE577',
+        '#a3b9c9',
+        '#8c271e',
+        ]}
+/>

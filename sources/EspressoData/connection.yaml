@@ -1,0 +1,5 @@
+# This file was automatically generated
+name: EspressoData
+type: motherduck
+options:
+  database: my_db
