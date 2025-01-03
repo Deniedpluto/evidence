@@ -74,7 +74,7 @@ JOIN (SELECT Roast, COUNT(Roast) AS TotalShots FROM ${EspressoData} GROUP BY Roa
 WHERE A.Roast <> 'Event'
   AND A."Shot Quality" IS NOT NULL
 GROUP BY A."Shot Quality", A.Roast, B.TotalShots
-ORDER BY "Shot Quality Order";
+ORDER BY "ShotQualityOrder";
 ```
 <BarChart data={ShotQuality}
     seriesOrder={["Great", "Good", "Okay", "Poor"]}
