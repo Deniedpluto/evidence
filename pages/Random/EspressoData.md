@@ -60,11 +60,11 @@ GROUP BY Roast
 
 ```ShotQuality
 SELECT A."Shot Quality"
-    ,CASE A."Shot Quality" WHEN 'Great' THEN 4
-                           WHEN 'Good' THEN 3
-                           WHEN 'Okay' THEN 2
-                           WHEN 'Poor' THEN 1
-                           ELSE 5 END AS "Shot Quality Order" 
+    ,CASE A."Shot Quality" WHEN 'Great' THEN 1
+                           WHEN 'Good' THEN 2
+                           WHEN 'Okay' THEN 3
+                           WHEN 'Poor' THEN 4
+                           ELSE 5 END AS "ShotQualityOrder" 
     ,COUNT(A."Shot Quality") AS Shots
     ,B.TotalShots
     ,COUNT(A."Shot Quality")/B.TotalShots AS ShotRatio
@@ -76,9 +76,8 @@ WHERE A.Roast <> 'Event'
 GROUP BY A."Shot Quality", A.Roast, B.TotalShots
 ORDER BY "Shot Quality Order";
 ```
-
 <BarChart data={ShotQuality}
-    sort="Shot Quality Order desc"
+    seriesOrder={["Great", "Good", "Okay", "Poor"]}
     x=Roast 
     y=ShotRatio 
     series="Shot Quality"
@@ -101,12 +100,12 @@ WHERE "Shot Quality" IS NOT NULL
 ```
 
 <ScatterPlot data={ShotsOnly}
-    sory="Shot Quality Order desc"
     x="Shot Number"
     y="Freshness"
     series="Shot Quality"
     title="Freshness Over Time"
-      colorPalette={[
+    seriesOrder={["Great", "Good", "Okay", "Poor"]}
+    colorPalette={[
         '#09814a',
         '#7CE577',
         '#a3b9c9',
