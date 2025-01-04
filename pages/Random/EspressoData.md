@@ -39,6 +39,12 @@ FROM ${EspressoData}
 WHERE Roast <> 'Event'
 GROUP BY Roast
 ```
+## Roast Summary
+
+The this table shows a summary of the data collected for each roast. The data includes the number of bags, grinds, average freshness, median grind setting, recommended grind setting, average shot time, and shot quality rates. I don't record every shot pulled since my Wife and some family make their own shots.
+
+```DataTable
+
 <DataTable data={EspressoSummary} search=true sort="Grinds desc">
     <Column id=Roast/>
     <Column id="Bags"/>
@@ -76,8 +82,13 @@ WHERE A.Roast <> 'Event'
 GROUP BY A."Shot Quality", A.Roast, B.TotalShots
 ORDER BY "ShotQualityOrder";
 ```
+
+## Shot Quality Distribution by Roast
+
+
 <BarChart data={ShotQuality}
-    seriesOrder={["Great", "Good", "Okay", "Poor"]}
+    sort="TotalShots"
+    eriesOrder={["Great", "Good", "Okay", "Poor"]}
     x=Roast 
     y=ShotRatio 
     series="Shot Quality"
@@ -96,8 +107,33 @@ ORDER BY "ShotQualityOrder";
 ```ShotsOnly
 SELECT * FROM ${EspressoData}
 WHERE "Shot Quality" IS NOT NULL
-  AND Roast <> 'Event';
+  AND Roast <> 'Event'
+  AND Freshness <= ${inputs.freshness}
+  AND Roast IN ${inputs.Roast.value};
 ```
+
+## Freshness and Shot Quality Over Time
+
+This scatter plot shows the freshness of each shot over time. The color of the dots represents the quality of the shot. You can filter the shot data using the Freshness slider and the Roast dropdown. Filtering out freshness outliers can help see the freshness over time.
+
+```ScatterPlot
+
+<Dropdown data={EspressoSummary} 
+    name=Roast 
+    value=Roast
+    multiple=true
+    selectAllByDefault=true
+/>
+
+<Slider
+    title="Freshness" 
+    name=freshness
+    min=0
+    max=110
+    step=5
+    defaultValue=110
+    size=large
+/>
 
 <ScatterPlot data={ShotsOnly}
     x="Shot Number"
