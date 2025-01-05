@@ -6,7 +6,7 @@ Starting in August of 2024, I decided it was time to take my espresso making to 
 
 ## Load New Data
 
-<LinkButton url='https://forms.gle/p7smaJmxgkmep7GK9'>
+<LinkButton url='https://docs.google.com/forms/d/e/1FAIpQLSfagX8q4mr_uGhRpa8VUDRn3aEoN1M3HFR8j-yX5gR-6anLvw/viewform?usp=pp_url&entry.1399859273=18&entry.1862546155=20&entry.549690909=Yes&entry.127448074=Yes&entry.1660307146=Yes&entry.1096897211=Yes'>
   New Data
 </LinkButton>
 
