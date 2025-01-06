@@ -2,7 +2,7 @@
 title: Espresso Data
 ---
 
-Starting in August of 2024, I decided it was time to take my espresso making to the next level. Aferall, if you don't record it - did it really happen? The side effect of better coffee was also quite inticing and the possibility of one day using this data to convice my wife (intelligent and beautiful as ever) to let me spend way too much money on a new espresso machine. In any case, I recently moved the recording of my espresso data into a Google Sheet and connected it to MotherDuck so now I can pull it in and display it here.
+Starting in August of 2024, I decided it was time to take my espresso making to the next level. Aferall, if you don't record it - did it really happen? The side effect of better coffee was also quite inticing along with the possibility of one day using this data to convice my wife (intelligent and beautiful as ever) to let me spend way too much money on a new espresso machine. In any case, I recently moved the recording of my espresso data into a Google Sheet and connected it to MotherDuck so now I can pull it in and display it here.
 
 ## Load New Data
 
