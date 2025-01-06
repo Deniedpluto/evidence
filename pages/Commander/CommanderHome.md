@@ -23,7 +23,6 @@ SELECT DISTINCT Owner FROM Commander_Decks.CommanderDecksWRA
     multiple = true
     selectAllByDefault=true
 />
-
 <Slider
     title="Minimum Games" 
     name=mingames
@@ -31,10 +30,22 @@ SELECT DISTINCT Owner FROM Commander_Decks.CommanderDecksWRA
     max=10
     size=large
 />
+<Slider
+    title="Is Active"
+    name=isactive
+    min=0
+    max=1
+    size=small
+    defaultValue=1
+  />
+    
 
 ### Commander Deck Ranking
    The commander decks are ranked by a Bayesian rating on the product of their Win and the "Win Rate Against". The Win Rate Against column shows the average win rate of the decks this deck has faced. The product of Win Rate and Win Rate Againsts is the Strength of the deck. This strength Bayesian average of the decks strength is taken to account for decks with different numbers of games played. Decks with less games are pulled towards the average while decks with more games have their strength pulled towards their actual win rate.
 
+```TestQuery
+SELECT * fROM Commander_Decks.CommanderDecksWRA
+```
 
 ```CommanderDecks
 SELECT 
@@ -50,9 +61,11 @@ SELECT
     ,Weight
     ,"Bayes STR" AS "Adjusted Strength"
     ,"Norm Bayes STR" AS "Standardized Strength"
+    ,Active
 FROM Commander_Decks.CommanderDecksWRA
 WHERE Played > ${inputs.mingames}
-  AND Owner IN ${inputs.Owner.value};
+  AND Owner IN ${inputs.Owner.value}
+  AND Active >= ${inputs.isactive};
 ```
 <DataTable data={CommanderDecks} search=true>
     <Column id=Rank/>
@@ -66,4 +79,5 @@ WHERE Played > ${inputs.mingames}
     <Column id=Weight/>
     <Column id=Strength/>
     <Column id="Standardized Strength" fmt = "#.0"/>
+    <Column id=Active/>
 </DataTable>
