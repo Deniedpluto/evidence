@@ -10,13 +10,6 @@ Starting in August of 2024, I decided it was time to take my espresso making to 
   New Data
 </LinkButton>
 
-```EspressoData
-SELECT *
-    ,date_diff('day', "Roast Date", "Shot Date") AS Freshness
-    ,ROW_NUMBER() OVER() AS "Shot Number"
-FROM EspressoData.EspressoData
-```
-
 ```EspressoSummary
 SELECT
     Roast
@@ -35,7 +28,7 @@ SELECT
     ,"Okay Shots"/Grinds AS "Okay Shot Rate"
     ,"Poor Shots"/Grinds AS "Poor Shot Rate"
     ,STRING_AGG(DISTINCT CAST(CAST("Roast Date" AS DATE) AS VARCHAR), ', ') AS "Roast Dates"
-FROM ${EspressoData}
+FROM EspressoData.EspressoData
 WHERE Roast <> 'Event'
 GROUP BY Roast
 ```
@@ -74,8 +67,8 @@ SELECT A."Shot Quality"
     ,B.TotalShots
     ,COUNT(A."Shot Quality")/B.TotalShots AS ShotRatio
     ,A.Roast
-FROM ${EspressoData} AS A
-JOIN (SELECT Roast, COUNT(Roast) AS TotalShots FROM ${EspressoData} GROUP BY Roast) AS B ON A.Roast = B.Roast
+FROM EspressoData.EspressoData AS A
+JOIN (SELECT Roast, COUNT(Roast) AS TotalShots FROM EspressoData.EspressoData GROUP BY Roast) AS B ON A.Roast = B.Roast
 WHERE A.Roast <> 'Event'
   AND A."Shot Quality" IS NOT NULL
 GROUP BY A."Shot Quality", A.Roast, B.TotalShots
@@ -147,3 +140,31 @@ This scatter plot shows the freshness of each shot over time. The color of the d
         '#8c271e',
         ]}
 />
+
+## Best Freshness
+
+<Slider
+    title="Minimum Grinds" 
+    name=grinds
+    min=0
+    max=30
+    step=1
+    defaultValue=0
+    size=small
+/>
+
+```BestFreshness
+SELECT Freshness
+    ,COUNT(Roast) AS "Grinds"
+    ,SUM(CASE WHEN "Shot Quality" = 'Great' THEN 1 ELSE 0 END) AS "Great Shots"
+    ,SUM(CASE WHEN "Shot Quality" = 'Good' THEN 1 ELSE 0 END) AS "Good Shots"
+    ,SUM(CASE WHEN "Shot Quality" = 'Okay' THEN 1 ELSE 0 END) AS "Okay Shots"
+    ,SUM(CASE WHEN "Shot Quality" = 'Poor' THEN 1 ELSE 0 END) AS "Poor Shots"
+    ,"Great Shots"/Grinds AS "Great Shot Rate"
+    ,"Good Shots"/Grinds AS "Good Shot Rate"
+    ,"Okay Shots"/Grinds AS "Okay Shot Rate"
+    ,"Poor Shots"/Grinds AS "Poor Shot Rate"
+FROM PM.EspressoDataExp
+WHERE Grinds >= ${inputs.grinds}
+GROUP BY Freshness
+```
