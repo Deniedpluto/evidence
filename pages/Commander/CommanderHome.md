@@ -115,5 +115,5 @@ ORDER BY "Total Played" DESC;
     <Column id="Number of Decks"/>
     <Column id="Total Played"/>
     <Column id="Total Wins"/>
-    <Column id="=Win Rate" fmt = "##.0%"/>
+    <Column id="Win Rate" fmt = "##.0%"/>
 </DataTable>
