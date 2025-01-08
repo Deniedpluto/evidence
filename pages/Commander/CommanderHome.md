@@ -87,7 +87,7 @@ WHERE Played > ${inputs.mingames}
 We have a variety of tags that we use to describe our decks. Here are the tags we use and the number of decks that have each tag.
 
 ```Tags
-SELECT DISTINCT Tag FROM EspressoData.CommanderTags;
+SELECT DISTINCT Tag FROM CommanderTags.CommanderTags;
 ```
 
 <Dropdown data={Tags} 
@@ -103,8 +103,8 @@ SELECT Tag
       ,SUM(Played) AS "Total Played"
       ,SUM(Wins) AS "Total Wins"
       ,SUM(Wins)/SUM(Played) AS "Win Rate"
-FROM MTG.CommanderDecks AS cd
-JOIN MTG.CommanderDeckTags AS cdt ON cd.ID = cdt."Deck ID"
+FROM Commander_Decks.CommanderDecksWRA AS cd
+JOIN CommanderTags.CommanderTags AS cdt ON cd.ID = cdt."Deck ID"
 WHERE Tag IN ${inputs.Tags.value}
 GROUP BY Tag
 ORDER BY "Total Played" DESC;
