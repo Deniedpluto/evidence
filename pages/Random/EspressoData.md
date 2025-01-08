@@ -81,7 +81,7 @@ This bar chart shows the distribution of shot quality for each roast. The each R
 
 <BarChart data={ShotQuality}
     sort="TotalShots"
-    eriesOrder={["Great", "Good", "Okay", "Poor"]}
+    seriesOrder={["Great", "Good", "Okay", "Poor"]}
     x=Roast 
     y=ShotRatio 
     series="Shot Quality"
@@ -98,7 +98,7 @@ This bar chart shows the distribution of shot quality for each roast. The each R
         ]}/>
 
 ```ShotsOnly
-SELECT * FROM ${EspressoData}
+SELECT * FROM EspressoData.EspressoData
 WHERE "Shot Quality" IS NOT NULL
   AND Roast <> 'Event'
   AND Freshness <= ${inputs.freshness}
@@ -149,22 +149,48 @@ This scatter plot shows the freshness of each shot over time. The color of the d
     min=0
     max=30
     step=1
-    defaultValue=0
+    defaultValue=10
     size=small
 />
 
 ```BestFreshness
-SELECT Freshness
-    ,COUNT(Roast) AS "Grinds"
-    ,SUM(CASE WHEN "Shot Quality" = 'Great' THEN 1 ELSE 0 END) AS "Great Shots"
-    ,SUM(CASE WHEN "Shot Quality" = 'Good' THEN 1 ELSE 0 END) AS "Good Shots"
-    ,SUM(CASE WHEN "Shot Quality" = 'Okay' THEN 1 ELSE 0 END) AS "Okay Shots"
-    ,SUM(CASE WHEN "Shot Quality" = 'Poor' THEN 1 ELSE 0 END) AS "Poor Shots"
-    ,"Great Shots"/Grinds AS "Great Shot Rate"
-    ,"Good Shots"/Grinds AS "Good Shot Rate"
-    ,"Okay Shots"/Grinds AS "Okay Shot Rate"
-    ,"Poor Shots"/Grinds AS "Poor Shot Rate"
-FROM PM.EspressoDataExp
-WHERE Grinds >= ${inputs.grinds}
-GROUP BY Freshness
+SELECT A."Shot Quality"
+    ,CASE A."Shot Quality" WHEN 'Great' THEN 1
+                           WHEN 'Good' THEN 2
+                           WHEN 'Okay' THEN 3
+                           WHEN 'Poor' THEN 4
+                           ELSE 5 END AS "ShotQualityOrder" 
+    ,COUNT(A."Shot Quality") AS Shots
+    ,B.TotalShots
+    ,COUNT(A."Shot Quality")/B.TotalShots AS ShotRatio
+    ,CAST(A.Freshness AS VARCHAR) AS Freshness
+FROM EspressoData.EspressoData AS A
+JOIN (
+    SELECT Freshness
+          ,COUNT(Freshness) AS TotalShots 
+    FROM EspressoData.EspressoData 
+    GROUP BY Freshness) AS B ON A.Freshness = B.Freshness
+WHERE A.Roast <> 'Event'
+  AND A."Shot Quality" IS NOT NULL
+GROUP BY A."Shot Quality", A.Freshness, B.TotalShots
+HAVING TotalShots >= ${inputs.grinds}
+ORDER BY Freshness;
 ```
+
+<BarChart data={BestFreshness}
+    sort="Freshness"
+    seriesOrder={["Great", "Good", "Okay", "Poor"]}
+    x=Freshness 
+    y=ShotRatio 
+    series="Shot Quality"
+    type=stacked100
+    swapXY=true 
+    title="Shot Quality Distribution by Freshness" 
+    xtitle="Shot Quality" 
+    ytitle="Freshness" 
+    colorPalette={[
+        '#09814a',
+        '#7CE577',
+        '#a3b9c9',
+        '#8c271e',
+        ]}/>

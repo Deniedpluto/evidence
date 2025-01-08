@@ -81,3 +81,39 @@ WHERE Played > ${inputs.mingames}
     <Column id="Standardized Strength" fmt = "#.0"/>
     <Column id=Active/>
 </DataTable>
+
+### Deck Tags
+
+We have a variety of tags that we use to describe our decks. Here are the tags we use and the number of decks that have each tag.
+
+```Tags
+SELECT DISTINCT Tag FROM EspressoData.CommanderTags;
+```
+
+<Dropdown data={Tags} 
+    name=Tags 
+    value=Tag
+    multiple = true
+    selectAllByDefault=true
+/>
+
+```TagStats
+SELECT Tag
+      ,COUNT(DISTINCT cd.Deck) AS "Number of Decks"
+      ,SUM(Played) AS "Total Played"
+      ,SUM(Wins) AS "Total Wins"
+      ,SUM(Wins)/SUM(Played) AS "Win Rate"
+FROM MTG.CommanderDecks AS cd
+JOIN MTG.CommanderDeckTags AS cdt ON cd.ID = cdt."Deck ID"
+WHERE Tag IN ${inputs.Tags.value}
+GROUP BY Tag
+ORDER BY "Total Played" DESC;
+```
+
+<DataTable data={TagStats} search=true>
+    <Column id=Tag/>
+    <Column id="Number of Decks"/>
+    <Column id="Total Played"/>
+    <Column id="Total Wins"/>
+    <Column id="=Win Rate" fmt = "##.0%"/>
+</DataTable>

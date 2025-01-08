@@ -20,9 +20,16 @@ WITH MostRoast AS (
     LIMIT 1
 )
 
-SELECT Roast
-     ,COUNT(Roast) AS "Total Shots"
+SELECT ed.Roast
+     ,COUNT(ed.Roast) AS "Total Shots"
 
 FROM EspressoData.EspressoData AS ed
 JOIN MostRoast AS mr ON ed.Roast = mr.Roast
+GROUP BY ed.Roast
 ```
+
+<BigValue 
+    data={TopRoast} 
+    value="Total Shots" 
+    title="Most Shots" 
+/>
