@@ -84,19 +84,12 @@ WHERE Played > ${inputs.mingames}
 
 ### Deck Tags
 
-We have a variety of tags that we use to describe our decks. Here are the tags we use and the number of decks that have each tag.
+Deck tags are used to categorize decks by playstyle, theme, color, color identity, typal, and other. The tags give us better insights into the attributes of deks that are played within our meta and which are the most successful.
 
 ```Tags
-SELECT DISTINCT Tag FROM CommanderTags.CommanderTags;
+SELECT DISTINCT "Tag Type" AS TagType, Tag
+FROM CommanderTags.CommanderTags;
 ```
-
-<Dropdown data={Tags} 
-    name=Tags 
-    value=Tag
-    multiple = true
-    selectAllByDefault=true
-/>
-
 ```TagStats
 SELECT Tag
       ,COUNT(DISTINCT cd.Deck) AS "Number of Decks"
@@ -106,9 +99,23 @@ SELECT Tag
 FROM Commander_Decks.CommanderDecksWRA AS cd
 JOIN CommanderTags.CommanderTags AS cdt ON cd.ID = cdt."Deck ID"
 WHERE Tag IN ${inputs.Tags.value}
+  AND "Tag Type" IN ${inputs.tagtype.value}
 GROUP BY Tag
 ORDER BY "Total Played" DESC;
 ```
+
+<Dropdown data={Tags} 
+    name=tagtype
+    value=TagType
+    multiple=true
+    selectAllByDefault=true
+/>
+<Dropdown data={Tags} 
+    name=Tags 
+    value=Tag
+    multiple=true
+    selectAllByDefault=true
+/>
 
 <DataTable data={TagStats} search=true>
     <Column id=Tag/>
