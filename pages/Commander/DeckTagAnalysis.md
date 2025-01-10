@@ -8,12 +8,12 @@ Deck tags are used to categorize decks by playstyle, theme, color, color identit
 
 ```TagTypes
 SELECT DISTINCT "Tag Type" AS TagType, Tag
-FROM CommanderTags.CommanderTags;
+FROM CommanderTags.CommanderTags
 ```
 
 ```Tags
 SELECT Tag
-FROM TagTypes 
+FROM ${TagTypes} 
 WHERE TagType IN ${inputs.tagtype.value}
 ```
 
@@ -28,11 +28,11 @@ JOIN CommanderTags.CommanderTags AS cdt ON cd.ID = cdt."Deck ID"
 WHERE Tag IN ${inputs.Tags.value}
   AND "Tag Type" IN ${inputs.tagtype.value}
 GROUP BY Tag
-ORDER BY "Total Played" DESC;
+ORDER BY "Total Played" DESC
 ```
 
 ```DeckWithTags
-SELECT cd.*
+SELECT cd.*, cdt."Tag Type", cdt.Tag
 FROM Commander_Decks.CommanderDecksWRA AS cd
 JOIN CommanderTags.CommanderTags AS cdt ON cd.ID = cdt."Deck ID"
 WHERE Tag IN ${inputs.Tags.value}
@@ -64,6 +64,8 @@ WHERE Tag IN ${inputs.Tags.value}
 <DataTable data={DeckWithTags} search=true>
     <Column id=Deck/>
     <Column id=Owner/>
+    <Column id="Tag Type"/>
+    <Column id=Tag/>
     <Column id=Played/>
     <Column id=Wins/>
     <Column id="Win Rate" fmt = "##.0%"/>
@@ -73,5 +75,4 @@ WHERE Tag IN ${inputs.Tags.value}
     <Column id="Bayes STR"/>
     <Column id="Norm Bayes STR"/>
     <Column id=Active/>
-    <Column id=LastPlayed/>
 </DataTable>
