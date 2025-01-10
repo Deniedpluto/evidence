@@ -117,25 +117,25 @@ WHERE Owner = 'Tank'
 ```
 
 <Dropdown data={DeniedplutoDecks} 
-    name=DeniedplutoDeck 
+    name=Deniedplutos 
     value=Deck
     multiple = true
     selectAllByDefault=true
 />
 <Dropdown data={WedgetableDecks} 
-    name=WedgetableDeck 
+    name=Wedgetables 
     value=Deck
     multiple = true
     selectAllByDefault=true
 />
 <Dropdown data={GhstflameDecks} 
-    name=GhstflameDeck 
+    name=Ghstflames 
     value=Deck
     multiple = true
     selectAllByDefault=true
 />
 <Dropdown data={TankDecks} 
-    name=TankDeck 
+    name=Tanks
     value=Deck
     multiple = true
     selectAllByDefault=true
@@ -158,10 +158,10 @@ SELECT
     ,"Rolling Wins" / "Rolling Games" AS "Win Rate"
 FROM Commander_History.CommanderHistory
 WHERE Match <> 0
-  AND (Deck IN ${inputs.DeniedplutoDeck.value}
-    OR Deck IN ${inputs.WedgetableDeck.value}
-    OR Deck IN ${inputs.GhstflameDeck.value}
-    OR Deck IN ${inputs.TankDeck.value});
+  AND (Deck IN ${inputs.Deniedplutos.value}
+    OR Deck IN ${inputs.Wedgetables.value}
+    OR Deck IN ${inputs.Ghstflames.value}
+    OR Deck IN ${inputs.Tanks.value});
 ```
 
 <LineChart 
