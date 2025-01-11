@@ -1,5 +1,5 @@
 ---
-title: Bigly Magic Time
+title: Commander Meta Analysis
 ---
 ## Welcome to Bigly Magic Time!
 A place where a group of friends regularly play commander and track their games. We have a variety of decks and playstyles. We orignally started playing using the Guildpact app and still do. However, we have begun to use a ranking system that takes into account the win rate of the deck and the win rate of the decks it has faced. This gives a more accurate representation of the strength of the deck.
@@ -16,7 +16,10 @@ Most of us keep our decks on [Moxfield](https://www,moxfield.com)
 ```Owners
 SELECT DISTINCT Owner FROM Commander_Decks.CommanderDecksWRA
 ```
-
+<ButtonGroup name=DeckStatus>
+    <ButtonGroupItem valueLabel="Bigly Magic Time" value="BMT" default/>
+    <ButtonGroupItem valueLabel="7's Only" value="SevensOnly" />
+</ButtonGroup>
 <Dropdown data={Owners} 
     name=Owner 
     value=Owner
@@ -30,15 +33,11 @@ SELECT DISTINCT Owner FROM Commander_Decks.CommanderDecksWRA
     max=10
     size=large
 />
-<Slider
-    title="Is Active"
-    name=isactive
-    min=0
-    max=1
-    size=small
-    defaultValue=1
-  />
-    
+<ButtonGroup name=DeckStatus>
+    <ButtonGroupItem valueLabel="All" value="0,1" default/>
+    <ButtonGroupItem valueLabel="Active" value="1" />
+    <ButtonGroupItem valueLabel="Inactive" value="0"/>
+</ButtonGroup>
 
 ### Commander Deck Ranking
    The commander decks are ranked by a Bayesian rating on the product of their Win and the "Win Rate Against". The Win Rate Against column shows the average win rate of the decks this deck has faced. The product of Win Rate and Win Rate Againsts is the Strength of the deck. This strength Bayesian average of the decks strength is taken to account for decks with different numbers of games played. Decks with less games are pulled towards the average while decks with more games have their strength pulled towards their actual win rate.
@@ -65,7 +64,7 @@ SELECT
 FROM Commander_Decks.CommanderDecksWRA
 WHERE Played > ${inputs.mingames}
   AND Owner IN ${inputs.Owner.value}
-  AND Active >= ${inputs.isactive};
+  AND Active IN (${inputs.DeckStatus});
 ```
 <DataTable data={CommanderDecks} search=true>
     <Column id=Rank/>

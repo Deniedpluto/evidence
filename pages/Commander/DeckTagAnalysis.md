@@ -27,6 +27,7 @@ FROM Commander_Decks.CommanderDecksWRA AS cd
 JOIN CommanderTags.CommanderTags AS cdt ON cd.ID = cdt."Deck ID"
 WHERE Tag IN ${inputs.Tags.value}
   AND "Tag Type" IN ${inputs.tagtype.value}
+  AND Active IN (${inputs.DeckStatus})
 GROUP BY Tag
 ORDER BY "Total Played" DESC
 ```
@@ -37,9 +38,13 @@ FROM Commander_Decks.CommanderDecksWRA AS cd
 JOIN CommanderTags.CommanderTags AS cdt ON cd.ID = cdt."Deck ID"
 WHERE Tag IN ${inputs.Tags.value}
   AND "Tag Type" IN ${inputs.tagtype.value}
-  AND Active = 1
+  AND Active IN (${inputs.DeckStatus})
 ```
-
+<ButtonGroup name=DeckStatus>
+    <ButtonGroupItem valueLabel="All" value="0,1" default/>
+    <ButtonGroupItem valueLabel="Active" value="1" />
+    <ButtonGroupItem valueLabel="Inactive" value="0"/>
+</ButtonGroup>
 <Dropdown data={TagTypes} 
     name=tagtype
     value=TagType
@@ -55,10 +60,10 @@ WHERE Tag IN ${inputs.Tags.value}
 
 <DataTable data={TagStats} search=true>
     <Column id=Tag/>
-    <Column id="Number of Decks"/>
-    <Column id="Total Played"/>
-    <Column id="Total Wins"/>
-    <Column id="Win Rate" fmt = "##.0%"/>
+    <Column id="Number of Decks" contentType=bar/>
+    <Column id="Total Played" contentType=bar/>
+    <Column id="Total Wins" contentType=bar/>
+    <Column id="Win Rate" fmt = "##.0%" contentType=colorscale colorScale={['#ce5050','white','#6db678']} align=center/>
 </DataTable>
 
 <DataTable data={DeckWithTags} search=true>
