@@ -28,6 +28,7 @@ JOIN CommanderTags.CommanderTags AS cdt ON cd.ID = cdt."Deck ID"
 WHERE Tag IN ${inputs.Tags.value}
   AND "Tag Type" IN ${inputs.tagtype.value}
   AND Active IN (${inputs.DeckStatus})
+  AND Meta IN ${inputs.Meta}
 GROUP BY Tag
 ORDER BY "Total Played" DESC
 ```
@@ -39,7 +40,13 @@ JOIN CommanderTags.CommanderTags AS cdt ON cd.ID = cdt."Deck ID"
 WHERE Tag IN ${inputs.Tags.value}
   AND "Tag Type" IN ${inputs.tagtype.value}
   AND Active IN (${inputs.DeckStatus})
+  AND Meta IN ${inputs.Meta}
 ```
+<ButtonGroup name=Meta>
+    <ButtonGroupItem valueLabel="All" value="('BMT', 'SevensOnly')" default/>
+    <ButtonGroupItem valueLabel="Bigly Magic Time" value="('BMT')"/>
+    <ButtonGroupItem valueLabel="7's Only" value="('SevensOnly')"/>
+</ButtonGroup>
 <ButtonGroup name=DeckStatus>
     <ButtonGroupItem valueLabel="All" value="0,1" default/>
     <ButtonGroupItem valueLabel="Active" value="1" />

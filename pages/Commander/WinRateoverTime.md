@@ -4,11 +4,22 @@ title: Win Rate Over Time
 
 The following table shows the rolling win rate of each player over the last games. This is a good way to see how a player is doing recently and gives a clearer picture of the current balance within the meta. Users can change the number of rolling games calculated by adjusting the slider below. 
 
-```slidermax
-SELECT max(Match) AS LastMatch
+```actualMatches
+SELECT *,
+       DENSE_RANK() OVER(PARTITION BY Meta ORDER BY Match) AS MatchNumber
 FROM Commander_History.CommanderHistory
+WHERE Match <> 0
 ```
 
+```slidermax
+SELECT max(MatchNumber) AS LastMatch
+FROM ${actualMatches}
+```
+<ButtonGroup name=Meta>
+    <ButtonGroupItem valueLabel="All" value="('BMT', 'SevensOnly')" default/>
+    <ButtonGroupItem valueLabel="Bigly Magic Time" value="('BMT')"/>
+    <ButtonGroupItem valueLabel="7's Only" value="('SevensOnly')"/>
+</ButtonGroup>
 <Slider
     title="Rolling Average" 
     name=rollavg
@@ -22,20 +33,23 @@ FROM Commander_History.CommanderHistory
 ### Rolling Win Rate Table
 
 ```RollingAverage
-WITH lastgame AS (
-    SELECT max(Match) - ${inputs.rollavg} AS LastMatch
-    FROM Commander_History.CommanderHistory
+WITH lastmatches AS (
+SELECT Meta, MAX(MatchNumber) AS LastMatch
+FROM ${actualMatches}
+WHERE Meta IN ${inputs.Meta}
+GROUP BY Meta
 ),
 
 allgames AS (
   SELECT 
-    Owner
+    Meta
+    ,Owner
     ,SUM(CASE WHEN Place = 1 THEN 1 ELSE 0 END) AS "Total Wins"
     ,COUNT() AS "Total Games"
     ,"Total Wins" / "Total Games" AS "Overall Win Rate"
 FROM Commander_History.CommanderHistory
 WHERE Match <> 0
-GROUP BY Owner
+GROUP BY Meta, Owner
 )
 
 SELECT 
@@ -46,10 +60,11 @@ SELECT
     ,AG."Total Wins"
     ,AG."Total Games"
     ,AG."Overall Win Rate"
-FROM Commander_History.CommanderHistory AS CH
-LEFT JOIN allgames AS AG ON CH.Owner = AG.Owner
-WHERE Match > (SELECT LastMatch FROM lastgame)
-  AND Match <> 0
+FROM ${actualMatches} AS CH
+JOIN lastmatches ON CH.Meta = lastmatches.Meta
+LEFT JOIN allgames AS AG ON CH.Owner = AG.Owner AND CH.Meta = AG.Meta
+WHERE Match <> 0
+  AND MatchNumber - lastmatches.LastMatch >= -${inputs.rollavg}
 GROUP BY CH.Owner, AG."Total Wins", AG."Total Games", AG."Overall Win Rate";
 ```
 <DataTable data={RollingAverage} search=true sort=Owner>
@@ -69,7 +84,7 @@ The table above shows the rolling win rate of each player over the last {inputs.
 ```RollingAverageGraph
 SELECT
     Owner
-    ,Match
+    ,MatchNumber
     ,SUM(CASE WHEN Place = 1 THEN 1 ELSE 0 END) OVER (
         PARTITION BY Owner
         ORDER BY Match ASC
@@ -81,13 +96,14 @@ SELECT
         ROWS BETWEEN ${inputs.rollavg} PRECEDING AND CURRENT ROW
     ) AS "Rolling Games"
     ,"Rolling Wins" / "Rolling Games" AS "Win Rate"
-FROM Commander_History.CommanderHistory
-WHERE Match <> 0;
+FROM ${actualMatches}
+WHERE Match <> 0
+  AND Meta IN ${inputs.Meta};
 ```
 
 <LineChart 
     data={RollingAverageGraph}
-    x=Match
+    x=MatchNumber
     y="Win Rate" 
     yFmt="##.0%"
     yMax=.6
@@ -115,6 +131,15 @@ WHERE Owner = 'Ghstflame'
 SELECT DISTINCT Deck FROM Commander_Decks.CommanderDecksWRA
 WHERE Owner = 'Tank'
 ```
+```RedFerretDecks
+SELECT DISTINCT Deck FROM Commander_Decks.CommanderDecksWRA
+WHERE Owner = 'RedFerret'
+```
+```MacrosageDecks
+SELECT DISTINCT Deck FROM Commander_Decks.CommanderDecksWRA
+WHERE Owner = 'Macrosage'
+```
+
 
 <Dropdown data={DeniedplutoDecks} 
     name=Deniedplutos 
@@ -140,11 +165,23 @@ WHERE Owner = 'Tank'
     multiple = true
     selectAllByDefault=true
 />
+<Dropdown data={RedFerretDecks} 
+    name=RedFerret
+    value=Deck
+    multiple = true
+    selectAllByDefault=true
+/>
+<Dropdown data={MacrosageDecks} 
+    name=Macrosage
+    value=Deck
+    multiple = true
+    selectAllByDefault=true
+/>
 
 ```RollingAverageGraphDeck
 SELECT
     Owner
-    ,Match
+    ,MatchNumber
     ,SUM(CASE WHEN Place = 1 THEN 1 ELSE 0 END) OVER (
         PARTITION BY Owner
         ORDER BY Match ASC
@@ -156,17 +193,20 @@ SELECT
         ROWS BETWEEN ${inputs.rollavg} PRECEDING AND CURRENT ROW
     ) AS "Rolling Games"
     ,"Rolling Wins" / "Rolling Games" AS "Win Rate"
-FROM Commander_History.CommanderHistory
+FROM ${actualMatches}
 WHERE Match <> 0
   AND (Deck IN ${inputs.Deniedplutos.value}
     OR Deck IN ${inputs.Wedgetables.value}
     OR Deck IN ${inputs.Ghstflames.value}
-    OR Deck IN ${inputs.Tanks.value});
+    OR Deck IN ${inputs.Tanks.value}
+    OR Deck IN ${inputs.RedFerret.value}
+    OR Deck IN ${inputs.Macrosage.value})
+    AND Meta IN ${inputs.Meta};
 ```
 
 <LineChart 
     data={RollingAverageGraphDeck}
-    x=Match
+    x=MatchNumber
     y="Win Rate" 
     yFmt="##.0%"
     yMax=.6
