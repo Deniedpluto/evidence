@@ -170,7 +170,7 @@ GROUP BY "Shot Quality"
         '#09814a',
         ]}/>
 
-### Shot Qualitry by Roast
+### Shot Quality by Roast
 <BarChart data={ShotsPM}
     sort="TotalShots"
     seriesOrder={["Poor", "Okay", "Good", "Great"]}
