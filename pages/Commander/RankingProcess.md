@@ -23,18 +23,19 @@ The number of games played is used in the [bayesian average](https://en.wikipedi
 
 To pull this all together I multiply the win rate of the deck by the win rate of the decks it has faced to get a decks raw strength. I then take the weight of the deck described above and multiply the deck's raw strength by it and then add the product of the invserse of the weight by the average raw strength of all decks. This gives me the bayesian average of the decks strength. I then standardize this by subtracting the average strength of all decks and dividing by the standard deviation of all decks.
 
-### The Math
-WR = Deck Win Rate
-WRA = Deck Win Rate Against
-P = Number of games played
-A(P) = Average number of games played
-W = Weight of the deck
-STR = Raw Strength
-A(STR) = Average Raw Strength
-BSTR = Bayes Strength
+### The Variables
+- WR = Deck Win Rate
+- WRA = Deck Win Rate Against
+- P = Number of games played
+- A(P) = Average number of games played
+- W = Weight of the deck
+- STR = Raw Strength
+- A(STR) = Average Raw Strength
+- BSTR = Bayes Strength
 
-STR = WR * WRA
-W = P / (A(P) + P)
-BSTR = (STR * W) + (A(STR) * (1 - W))
+### The Formulas
+- STR = WR \* WRA
+- W = P / (A(P) + P)
+- BSTR = (STR \* W) + (A(STR) \* (1 - W))
 
 
