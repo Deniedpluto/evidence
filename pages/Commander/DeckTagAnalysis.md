@@ -1,5 +1,6 @@
 ---
 title: Deck Tag Analysis
+sidebar_position: 3
 ---
 
 ### Deck Tags

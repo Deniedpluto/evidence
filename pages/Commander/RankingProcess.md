@@ -1,5 +1,6 @@
 ---
 title: Commander Deck Ranking Process
+sidebar_position: 4
 ---
 
 ### The Background

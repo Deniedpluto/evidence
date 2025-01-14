@@ -1,5 +1,6 @@
 ---
 title: Win Rate Over Time
+sidebar_position: 2
 ---
 
 The following table shows the rolling win rate of each player over the last games. This is a good way to see how a player is doing recently and gives a clearer picture of the current balance within the meta. Users can change the number of rolling games calculated by adjusting the slider below. 

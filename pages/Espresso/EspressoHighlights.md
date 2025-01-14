@@ -1,5 +1,6 @@
 ---
 title: Espresso Highlights
+sidebar_position: 2
 ---
 
 ```MonthlyShots
