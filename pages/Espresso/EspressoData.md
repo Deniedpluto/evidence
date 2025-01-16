@@ -105,6 +105,35 @@ WHERE "Shot Quality" IS NOT NULL
   AND Freshness <= ${inputs.freshness}
   AND Roast IN ${inputs.Roast.value};
 ```
+## Shot Time Distribution
+
+The ideal shot timing for my machine is between 25 and 30 seconds starting the moment that the water begins to infuse the coffee. 
+
+```ShotTiming
+SELECT "Shot Time"
+      ,"Shot Quality"
+      ,COUNT(Roast) AS Shots
+FROM EspressoData.EspressoData
+WHERE "Shot Time" < 60
+  AND "Shot Quality" IS NOT NULL
+GROUP BY "Shot Time", "Shot Quality"
+```
+
+<BarChart data={ShotTiming}
+    sort="Shot Time"
+    seriesOrder={["Great", "Good", "Okay", "Poor"]}
+    x="Shot Time" 
+    y=Shots 
+    series="Shot Quality"
+    type=stacked
+    title="Shot Timing and Quality"  
+    colorPalette={[
+        '#09814a',
+        '#7CE577',
+        '#a3b9c9',
+        '#8c271e']}
+/>
+
 
 ## Freshness and Shot Quality Over Time
 
