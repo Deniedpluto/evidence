@@ -20,6 +20,8 @@ SELECT  strftime('%b %y', "Shot Date") AS "Month"
         ,"Shot Quality" 
         ,COUNT(Roast) AS Grinds
 FROM EspressoData.EspressoData
+WHERE Roast <> 'Event'
+  AND "Shot Quality" IS NOT NULL
 GROUP BY Roast, "Month", MonthDiff, "Shot Quality"
 ORDER BY Grinds DESC
 ```
@@ -164,12 +166,12 @@ GROUP BY "Shot Quality"
     yGridlines=false
     xBaseline=false
     yAxisLabels=false
-    colorPalette={[
-        '#8c271e',
-        '#a3b9c9',
-        '#7CE577',
-        '#09814a',
-        ]}/>
+    seriesColors={{
+        "Poor":'#8c271e',
+        "Okay":'#a3b9c9',
+        "Good":'#7CE577',
+        "Great":'#09814a',
+        }}/>
 
 ### Shot Quality by Roast
 <BarChart data={ShotsPM}
@@ -180,12 +182,12 @@ GROUP BY "Shot Quality"
     series="Shot Quality"
     type=stacked
     swapXY=true
-    colorPalette={[
-        '#8c271e',
-        '#a3b9c9',
-        '#7CE577',
-        '#09814a',
-        ]}/>
+    seriesColors={{
+        "Poor":'#8c271e',
+        "Okay":'#a3b9c9',
+        "Good":'#7CE577',
+        "Great":'#09814a',
+        }}/>
 
 ### Shot Quality by Month
 
@@ -205,9 +207,9 @@ GROUP BY "Shot Quality"
     title="Shot Quality Distribution by Month" 
     xtitle="Month" 
     ytitle="Grinds" 
-    colorPalette={[
-        '#8c271e',
-        '#a3b9c9',
-        '#7CE577',
-        '#09814a',
-        ]}/>
+    seriesColors={{
+        "Poor":'#8c271e',
+        "Okay":'#a3b9c9',
+        "Good":'#7CE577',
+        "Great":'#09814a',
+        }}/>

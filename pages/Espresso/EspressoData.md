@@ -91,12 +91,12 @@ This bar chart shows the distribution of shot quality for each roast. The each R
     title="Shot Quality Distribution by Roast" 
     xtitle="Shot Quality" 
     ytitle="Grinds" 
-    colorPalette={[
-        '#09814a',
-        '#7CE577',
-        '#a3b9c9',
-        '#8c271e',
-        ]}/>
+    seriesColors={{
+        "Poor":'#8c271e',
+        "Okay":'#a3b9c9',
+        "Good":'#7CE577',
+        "Great":'#09814a',
+        }}/>
 
 ```ShotsOnly
 SELECT * FROM EspressoData.EspressoData
@@ -127,11 +127,12 @@ GROUP BY "Shot Time", "Shot Quality"
     series="Shot Quality"
     type=stacked
     title="Shot Timing and Quality"  
-    colorPalette={[
-        '#09814a',
-        '#7CE577',
-        '#a3b9c9',
-        '#8c271e']}
+    seriesColors={{
+        "Poor":'#8c271e',
+        "Okay":'#a3b9c9',
+        "Good":'#7CE577',
+        "Great":'#09814a',
+        }}
 />
 
 
@@ -163,12 +164,12 @@ This scatter plot shows the freshness of each shot over time. The color of the d
     series="Shot Quality"
     title="Freshness Over Time"
     seriesOrder={["Great", "Good", "Okay", "Poor"]}
-    colorPalette={[
-        '#09814a',
-        '#7CE577',
-        '#a3b9c9',
-        '#8c271e',
-        ]}
+    seriesColors={{
+        "Poor":'#8c271e',
+        "Okay":'#a3b9c9',
+        "Good":'#7CE577',
+        "Great":'#09814a',
+        }}
 />
 
 ## Best Freshness
@@ -218,9 +219,9 @@ ORDER BY Freshness;
     title="Shot Quality Distribution by Freshness" 
     xtitle="Shot Quality" 
     ytitle="Freshness" 
-    colorPalette={[
-        '#09814a',
-        '#7CE577',
-        '#a3b9c9',
-        '#8c271e',
-        ]}/>
+    seriesColors={{
+        "Poor":'#8c271e',
+        "Okay":'#a3b9c9',
+        "Good":'#7CE577',
+        "Great":'#09814a',
+        }}/>
