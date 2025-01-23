@@ -1,0 +1,1 @@
+SELECT * FROM BGP.vFACT_Play_Data;

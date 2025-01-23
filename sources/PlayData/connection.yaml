@@ -1,0 +1,5 @@
+# This file was automatically generated
+name: PlayData
+type: motherduck
+options:
+  database: my_db
