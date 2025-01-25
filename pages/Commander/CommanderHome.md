@@ -2,6 +2,7 @@
 title: Commander Meta Analysis
 sidebar_position: 1
 ---
+
 ## Welcome to My Commander Meta Analysis!
 Since early 2023 I've tracked the commander games that with my group of friends. We orignally started playing using the Guildpact app and still do and wanted a better interface for seeing more and deeper information about the games we've played. I've also created a new ranking system that takes into account the win rate of the deck and the win rate of the decks it has faced. I believe this gives a more accurate representation of the strength of the deck over using my adapted Elo calculation for multiplayer games.
 

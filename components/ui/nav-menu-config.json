@@ -1,0 +1,23 @@
+[
+    {
+      "label":"home",
+      "order": 0,
+      "show": true
+    },
+    {
+      "label":"BoardGamePlays",
+      "order": 1,
+      "show": true
+    },
+    {
+      "label":"Espresso",
+      "order": 2,
+      "show": true
+    },
+    {
+      "label":"Commander",
+      "order": 2,
+      "show": true
+    }
+  ]
+  

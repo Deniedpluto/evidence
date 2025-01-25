@@ -1,6 +1,16 @@
 ---
 title: DeniedPluto's Big Page of Little Data
+githubRepo: https://github.com/Deniedpluto
 ---
+
+<img src="https://avatars.githubusercontent.com/deniedpluto" alt="Peter" class="rounded-full w-24 h-24 mb-4">
+
+## Peter Matson
+
+<div style="display: flex; flex-direction: row; gap: 10px;">
+    <a href="https://www.linkedin.com/in/peterdoesdata/"><img src="/imgs/LinkedIn-Logo-In-Blue.png" alt="LinkedIn"></a>
+    <a href="https://github.com/deniedpluto"><img src="https://img.shields.io/badge/-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"></a>
+</div>
 
 ## My Data World
 
