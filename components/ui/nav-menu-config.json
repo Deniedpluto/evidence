@@ -2,22 +2,88 @@
     {
       "label":"home",
       "order": 0,
-      "show": true
+      "show": true,
+      "title": "Home"
     },
     {
       "label":"BoardGamePlays",
       "order": 1,
-      "show": true
+      "show": true,
+      "title": "Board Game Plays",
+      "children": [
+        {
+          "label": "BoardGamePlaysHome",
+          "order": 1,
+          "show": true,
+          "title": "Home",
+          "href": "/BoardGamePlays/BoardGamePlaysHome"
+        }
+      ]
     },
     {
       "label":"Espresso",
       "order": 2,
-      "show": true
+      "show": true,
+      "title": "Espresso",
+      "children": [
+        {
+          "label": "EspressoData",
+          "order": 1,
+          "show": true,
+          "title": "Home",
+          "href": "/Espresso/EspressoData"
+        },
+        {
+          "label": "EspressoHighlights",
+          "order": 2,
+          "show": true,
+          "title": "Highlights",
+          "href": "/Espresso/EspressoHighlights"
+        },
+        {
+          "label": "GrindAnalysis",
+          "order": 3,
+          "show": true,
+          "title": "Grind Analysis",
+          "href": "/Espresso/GrindAnalysis"
+        }
+      ]
     },
     {
       "label":"Commander",
       "order": 3,
-      "show": true
+      "show": true,
+      "title": "Commander",
+      "children": [
+        {
+          "label": "CommanderHome",
+          "order": 1,
+          "show": true,
+          "title": "Home",
+          "href": "/Commander/CommanderHome"
+        },
+        {
+          "label": "WinRateoverTime",
+          "order": 2,
+          "show": true,
+          "title": "Win Rate Over Time",
+          "href": "/Commander/WinRateoverTime"
+        },        
+        {
+          "label": "DeckTagAnalysis",
+          "order": 3,
+          "show": true,
+          "title": "Tag Analysis",
+          "href": "/Commander/DeckTagAnalysis"
+        },
+        {
+          "label": "RankingProcess",
+          "order": 4,
+          "show": true,
+          "title": "Ranking Process",
+          "href": "/Commander/RankingProcess"
+        }
+      ]
     }
   ]
   

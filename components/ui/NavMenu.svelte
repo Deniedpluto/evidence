@@ -24,7 +24,19 @@
                 .map(page => ({...page, children : Object.values(page.children),  ...navConfig.find(cfg => cfg.label === page.label)}))
                 .filter(page => page.show !== false) 
                 .sort((a, b) => a.order - b.order);
-          
+        
+        // This code updates the folder group to use the title instead of the folder name
+        /* sortedPages = sortedPages.map(page => {
+            // page.label = page.title;
+            // This will update the child pages somehow...
+            page.children = page.children.map(child => {
+                child.href = child.href;
+                child.label = child.title;
+                return child;
+            });
+            return page;
+        })  */              
+
             pages = [...sortedPages,];
         } else {
             console.error('No pages data');
@@ -65,13 +77,12 @@
                   <li class="hover:bg-gray-700 p-3"><a href="{item.href}/" on:click={handleNavigation}>{capitalizeFirstLetter(item.label)}</a></li>
               {/if}
               {#if item.children.length > 0}
-                  <li>
-                      <a href>{capitalizeFirstLetter(item.label)} <span uk-nav-parent-icon></span></a>
-                      <ul>
+                  <li style="padding-left: 1em">
+                    <a href>{capitalizeFirstLetter(item.title)} <span uk-nav-parent-icon></span></a>
+                    <ul>
                           {#each item.children as child}
                               {#if child.label}
-                                  <li><a href={child.href}>{capitalizeFirstLetter(child.label)}</a></li>
-                                  <li class="hover:bg-gray-700 p-3"><a href={child.href} on:click={handleNavigation}>{capitalizeFirstLetter(child.label)}</a></li>
+                                  <li class="hover:bg-gray-700 p-3"><a href="{child.href}/" on:click={handleNavigation}>{capitalizeFirstLetter(child.title)}</a></li>
                               {/if}
                           {/each}
                       </ul>

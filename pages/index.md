@@ -8,8 +8,8 @@
 ## Peter Matson
 
 <div style="display: flex; flex-direction: row; gap: 10px;">
-    <a href="https://www.linkedin.com/in/peterdoesdata/"><img src="/imgs/LinkedIn-Logo-In-Blue.png" alt="LinkedIn"></a>
-    <a href="https://github.com/deniedpluto"><img src="https://img.shields.io/badge/-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"></a>
+    <a href="https://www.linkedin.com/in/peterdoesdata/"><img src="https://img.shields.io/badge/LinkedIn-blue" alt=LinkedIn></a>
+    <a href="https://github.com/deniedpluto"><img src="https://img.shields.io/badge/GitHub-black" alt="GitHub"></a>
 </div>
 
 ## My Data World
