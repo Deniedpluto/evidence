@@ -1,6 +1,6 @@
 ---
-title: DeniedPluto's Big Page of Little Data
-githubRepo: https://github.com/Deniedpluto
+#title: DeniedPluto's Big Page of Little Data
+#githubRepo: https://github.com/Deniedpluto
 ---
 
 <img src="https://avatars.githubusercontent.com/deniedpluto" alt="Peter" class="rounded-full w-24 h-24 mb-4">

@@ -20,7 +20,7 @@
 
 	<EvidenceDefaultLayout {data}
 	logo="/imgs/logo.svg"
-	title='Evidence Test App'
+	title="DeniedPluto's Big Page of Little Data"
   	neverShowQueries={true}
   	githubRepo='https://github.com/deniedpluto/evidence'
   	hideSidebar={true}

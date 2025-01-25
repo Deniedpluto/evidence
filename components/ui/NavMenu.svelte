@@ -53,7 +53,7 @@
     
     <div class={`bg-gray-800 text-white w-64 min-h-screen ${isOpen ? 'block' : 'hidden'} transition-all`}>
       <div class="p-4 flex justify-between">
-        <h5 class="text-2xl font-semibold"><a href="/">Evi Dashboard</a></h5>
+        <h5 class="text-2xl font-semibold"><a href="/">Navigation Menu</a></h5>
         <button on:click={() => isOpen = !isOpen}>
             <img class="cursor-pointer" src="/imgs/close.svg" alt="menu" width="20" height="20">
         </button>

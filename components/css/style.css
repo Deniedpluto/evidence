@@ -1,7 +1,7 @@
-body > div {
+/*body > div { */
     /* display: flex; */
-  }
-  
+  /*}*/ 
+ 
   .open-sidenav header {
     width: calc(100% - 16rem);
   }
