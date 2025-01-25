@@ -3,7 +3,7 @@
 #githubRepo: https://github.com/Deniedpluto
 ---
 
-<img src="https://avatars.githubusercontent.com/deniedpluto" alt="Peter" class="rounded-full w-24 h-24 mb-4">
+<img src="https://avatars.githubusercontent.com/deniedpluto" alt="Peter" class="rounded-full w-48 h-48 mb-4">
 
 ## Peter Matson
 

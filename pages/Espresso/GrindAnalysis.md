@@ -8,20 +8,20 @@ The purpose of this tab is to provide users with insight into what grind setting
 SELECT DISTINCT RoastClean AS Roast
 FROM EspressoData.EspressoData
 WHERE Roast NOT IN ('Event', 'Half Caf')
+ORDER BY Roast
 ```
 
-<ButtonGroup data={Roasts} 
+<Dropdown data={Roasts} 
     name=Roast 
     value=Roast
-    multiple=false
-    selectAllByDefault=false
+    disableSelectAll=true
     defaultValue = "Brazil"
 />
 
 ```SubRoast
 SELECT DISTINCT CAST("Roast Date"::DATE() AS VARCHAR) AS RD
 FROM EspressoData.EspressoData
-WHERE RoastClean = '${inputs.Roast}'
+WHERE RoastClean = '${inputs.Roast.value}'
 ```
 
 <ButtonGroup 
@@ -29,6 +29,7 @@ WHERE RoastClean = '${inputs.Roast}'
     name=roastDates
     value=RD 
     title="Select Roast Dates"
+    defaultValue="2024-07-12"
 />
 
 <ButtonGroup name="FilterType" title="Date Filter Type">
@@ -46,7 +47,7 @@ SELECT Roast
       ,"Shot Quality"
       ,ROW_NUMBER() OVER(PARTITION BY Roast ORDER BY "Shot Number") AS "Roast Shot"
 FROM EspressoData.EspressoData
-WHERE RoastClean = '${inputs.Roast}'
+WHERE RoastClean = '${inputs.Roast.value}'
   AND "Roast Date" ${inputs.FilterType} CAST('${inputs.roastDates}' AS DATE)
   AND "Grind Setting" IS NOT NULL
   AND "Shot Quality" IS NOT NULL;
