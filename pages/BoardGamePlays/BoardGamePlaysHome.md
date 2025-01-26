@@ -30,9 +30,6 @@ FROM PlayData.PlayData
 </ButtonGroup>
 
 
-
-
-
 ```MonthlyData
 SELECT DATE_TRUNC('month', CAST(playDate AS Date)) AS playMonth
       ,COUNT(DISTINCT playID) AS games
@@ -54,3 +51,16 @@ GROUP BY gameType, playMonth
     }}>
     <ReferenceArea xMin='2023-12-01' xMax='2025-01-01' label='New Baby'/>
 </BarChart>
+
+### Board Game Stats
+
+What games have been played?
+
+```BoardGamePlays
+SELECT gamename
+      ,cooperative
+      ,COUNT(DISTINCT playid) AS Plays
+FROM PlayData.PlayData
+WHERE gameType IN ${inputs.gameType}
+  AND playMonth between '${inputs.manual_date_range.start}' and '${inputs.manual_date_range.end}'
+```

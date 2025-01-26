@@ -6,7 +6,6 @@ sidebar_position: 1
 ## Welcome to My Commander Meta Analysis!
 Since early 2023 I've tracked the commander games that with my group of friends. We orignally started playing using the Guildpact app and still do and wanted a better interface for seeing more and deeper information about the games we've played. I've also created a new ranking system that takes into account the win rate of the deck and the win rate of the decks it has faced. I believe this gives a more accurate representation of the strength of the deck over using my adapted Elo calculation for multiplayer games.
 
-
 ### Links to Moxfield
 Most of us keep our decks on [Moxfield](https://www,moxfield.com) 
   - [Deniedpluto](https://www.moxfield.com/users/Deniedpluto)
@@ -16,14 +15,15 @@ Most of us keep our decks on [Moxfield](https://www,moxfield.com)
   - RedFerret
   - [Macrosage](https://www.moxfield.com/users/Macrosage)
 
+I have also been building out a set/block of magic cards from my experiences play D&D. You can view them [here](https://deniedpluto.github.io/).
 
 ```Owners
 SELECT DISTINCT Owner FROM Commander_Decks.CommanderDecksWRA
 WHERE Meta IN ${inputs.Meta}
 ```
 <ButtonGroup name=Meta>
-    <ButtonGroupItem valueLabel="All" value="('BMT', 'SevensOnly')" default/>
-    <ButtonGroupItem valueLabel="Bigly Magic Time" value="('BMT')"/>
+    <ButtonGroupItem valueLabel="All" value="('BMT', 'SevensOnly')"/>
+    <ButtonGroupItem valueLabel="Bigly Magic Time" value="('BMT')" default/>
     <ButtonGroupItem valueLabel="7's Only" value="('SevensOnly')"/>
 </ButtonGroup>
 <Dropdown data={Owners} 
@@ -46,25 +46,7 @@ WHERE Meta IN ${inputs.Meta}
 />
 
 ### Commander Deck Ranking
-   The commander decks are ranked by a Bayesian rating on the product of their Win and the "Win Rate Against". The Win Rate Against column shows the average win rate of the decks this deck has faced. The product of Win Rate and Win Rate Againsts is the Strength of the deck. This strength Bayesian average of the decks strength is taken to account for decks with different numbers of games played. Decks with less games are pulled towards the average while decks with more games have their strength pulled towards their actual win rate.
-
-```PlayerStats
-SELECT Meta
-      ,Owner
-      ,SUM(Played) AS "Total Played"
-      ,SUM(Wins) AS "Total Wins"
-      ,SUM(Wins)/SUM(Played) AS "Win Rate"
-      ,AVG(Elo) AS "Average Elo"
-      ,AVG(WRA) AS "Average Win Rate Against"
-      ,AVG("Bayes STR") AS "Average Bayes Strength"
-      ,AVG("Norm Bayes STR") AS "Average Standardized Strength"
-FROM Commander_Decks.CommanderDecksWRA
-WHERE Played > ${inputs.mingames}
-  AND Owner IN ${inputs.Owner.value}
-  AND Active IN (${inputs.DeckStatus})
-  AND Meta IN ${inputs.Meta}
-GROUP BY Meta, Owner;
-```
+   The commander decks are ranked by a Bayesian rating on the product of their Win and the "Win Rate Against". The Win Rate Against column shows the average win rate of the decks this deck has faced. The product of Win Rate and Win Rate Againsts is the Strength of the deck. This strength Bayesian average of the decks strength is taken to account for decks with different numbers of games played. Decks with less games are pulled towards the average while decks with more games have their strength pulled towards their actual win rate. See [Ranking Process](../RankingProcess) for more details.
 
 ```CommanderDecks
 SELECT Meta
@@ -103,6 +85,27 @@ WHERE Played > ${inputs.mingames}
     <Column id=Active/>
 </DataTable>
 
+## Player Stats
+Overall Player stats including average Elo, WRA, Bayes STR. For a more granular analysis see [Win Rates Over Time](../WinRateoverTime)
+
+```PlayerStats
+SELECT Meta
+      ,Owner
+      ,SUM(Played) AS "Total Played"
+      ,SUM(Wins) AS "Total Wins"
+      ,SUM(Wins)/SUM(Played) AS "Win Rate"
+      ,AVG(Elo) AS "Average Elo"
+      ,AVG(WRA) AS "Average Win Rate Against"
+      ,AVG("Bayes STR") AS "Average Bayes Strength"
+      ,AVG("Norm Bayes STR") AS "Average Standardized Strength"
+FROM Commander_Decks.CommanderDecksWRA
+WHERE Played > ${inputs.mingames}
+  AND Owner IN ${inputs.Owner.value}
+  AND Active IN (${inputs.DeckStatus})
+  AND Meta IN ${inputs.Meta}
+GROUP BY Meta, Owner;
+```
+
 <DataTable data={PlayerStats} search=true>
     <Column id=Meta/>
     <Column id=Owner/>
@@ -113,4 +116,40 @@ WHERE Played > ${inputs.mingames}
     <Column id="Average Win Rate Against" fmt = "##.0%"/>
     <Column id="Average Bayes Strength"/>
     <Column id="Average Standardized Strength" fmt = "#.0"/>
+</DataTable>
+
+## Recent Plays
+
+Recent plays are shown below. Matches after 267 use the play order. Prior to match 267, players were ordered alphabetically.
+
+```RecentPlays
+WITH recentplays AS (
+  SELECT Match
+        ,CASE WHEN Place = 1 THEN 'W! - ' ELSE '' END || Deck AS PlayDetails
+        ,ROW_NUMBER() OVER(PARTITION BY Match ORDER BY Owner) AS rn
+        ,PlayerOrder
+  FROM Commander_History.CommanderHistory
+  WHERE Match >= (SELECT MAX(Match) - 9 
+                  FROM Commander_History.CommanderHistory 
+                  WHERE Meta IN ${inputs.Meta}
+                )
+    AND Meta IN ${inputs.Meta}
+)
+
+SELECT Match
+      ,MAX(CASE WHEN COALESCE(PlayerOrder, rn) = 1 THEN PlayDetails ELSE NULL END) AS Player1
+      ,MAX(CASE WHEN COALESCE(PlayerOrder, rn) = 2 THEN PlayDetails ELSE NULL END) AS Player2
+      ,MAX(CASE WHEN COALESCE(PlayerOrder, rn) = 3 THEN PlayDetails ELSE NULL END) AS Player3
+      ,MAX(CASE WHEN COALESCE(PlayerOrder, rn) = 4 THEN PlayDetails ELSE NULL END) AS Player4
+FROM recentplays
+GROUP BY Match
+ORDER BY Match desc
+```
+
+<DataTable data={RecentPlays}>
+    <Column id="Match"/>
+    <Column id="Player1"/>
+    <Column id="Player2"/>
+    <Column id="Player3"/>
+    <Column id="Player4"/>
 </DataTable>

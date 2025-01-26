@@ -89,3 +89,31 @@ WHERE Tag IN ${inputs.Tags.value}
     <Column id="Norm Bayes STR"/>
     <Column id=Active/>
 </DataTable>
+
+## Player Order Analysis
+
+Play order tracking began on match 267. All future matches *should* have play order recorded. The "Unordered" column shows the average win rate before we started tracking play order. This is slightly higher than 25% since we sometimes play with only 3 players.
+
+```PlayOrder
+SELECT CASE PlayerOrder WHEN 1 THEN '1'
+                        WHEN 2 THEN '2'
+                        WHEN 3 THEN '3'
+                        WHEN 4 THEN '4' ELSE 'Unordered' END AS PlayerOrder
+      ,SUM(CASE WHEN Place = 1 THEN 1 ELSE 0 END) AS Wins
+      ,COUNT(Match) AS Played
+      ,Wins/Played AS "Win Rate"
+FROM Commander_History.CommanderHistory
+GROUP BY PlayerOrder
+ORDER BY PlayerOrder
+```
+
+<BarChart data={PlayOrder}
+    x=PlayerOrder
+    y="Win Rate"
+    yGridlines=false
+    yAxisLabels=false
+    labelFmt="##%"
+    labels=true
+    >
+    <ReferenceLine y=.25 label="Expected Win Rate"/>
+</BarChart>
