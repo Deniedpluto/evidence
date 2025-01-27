@@ -57,10 +57,43 @@ GROUP BY gameType, playMonth
 What games have been played?
 
 ```BoardGamePlays
-SELECT gamename
-      ,cooperative
-      ,COUNT(DISTINCT playid) AS Plays
+SELECT gameName
+      ,CASE WHEN cooperative = true THEN 'Cooperative' ELSE 'Competitive' END AS gameType
+      ,playID
+      ,playDate
+      ,DATE_TRUNC('month', CAST(playDate AS Date)) AS playMonth
+      ,durationMin
+      ,board
+      ,ignored
+      ,locationName
+      ,COUNT(playerName) AS Players
+      ,gameGroup
+      ,expectedWinRateOverwrite
 FROM PlayData.PlayData
 WHERE gameType IN ${inputs.gameType}
   AND playMonth between '${inputs.manual_date_range.start}' and '${inputs.manual_date_range.end}'
+GROUP BY gameName, cooperative, playID, playDate, durationMin, board, ignored, locationName, gameGroup,expectedWinRateOverwrite
 ```
+
+```GameStats
+SELECT gameName
+      ,gameType
+      ,COUNT(playID) AS plays
+      ,COUNT(DISTINCT playDate) AS daysPlayed
+      ,SUM(durationMin) AS totalPlaytime
+      ,COUNT(DISTINCT locationName) AS distinctLocations
+      ,AVG(Players) AS averagePlayerCount
+      ,gameGroup
+FROM ${BoardGamePlays}
+GROUP BY gameName, gameType, gameGroup
+```
+
+<DataTable data={GameStats} search=true sort="plays desc" totalRow=true>
+    <Column id=gameName title="Name" wrap=true/>
+    <Column id=gameType title="Type"/>
+    <Column id=plays/>
+    <Column id=daysPlayed title="# of Days"/>
+    <Column id=totalPlaytime title="Total Time"/>
+    <Column id=distinctLocations title="# of Locations"/>
+    <Column id=averagePlayerCount title="Avg. Player Count" fmt="#.0"/>
+</DataTable>

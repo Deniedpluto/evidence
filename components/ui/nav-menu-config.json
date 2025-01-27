@@ -17,6 +17,13 @@
           "show": true,
           "title": "Home",
           "href": "/BoardGamePlays/BoardGamePlaysHome"
+        },
+        {
+          "label": "DiceThrone",
+          "order": 2,
+          "show": true,
+          "title": "Dice Throne",
+          "href": "/BoardGamePlays/DiceThrone"
         }
       ]
     },
