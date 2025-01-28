@@ -52,9 +52,10 @@ GROUP BY playerName, role, m.gameName
 HAVING Plays >= ${inputs.minGames}
 ```
 
-<DataTable data={DiceThroneMain} groupsOpen=false groupType=section groupBy=playerName>  
- 	<Column id=playerName/> 
-	<Column id=role totalAgg=""/>  
+<DataTable data={DiceThroneMain}>  
+ 	<Column id=gameName title="Game"/>
+    <Column id=playerName title="Player"/>
+    <Column id=role/>
 	<Column id=Plays/> 
 	<Column id=Wins/> 
 	<Column id="Win Rate" fmt=pct1/> 
