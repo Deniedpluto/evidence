@@ -8,13 +8,25 @@ We began our [Dice Throne](https://shop.dicethrone.com/) journey back in October
 SELECT playID
       ,gameName
       ,COUNT(playerName) AS Players
+      ,BOOL_OR(startPlayer) AS HasStartPlayer
+      ,SUM(CASE WHEN winner=true THEN 1 ELSE 0 END) AS Winners
 FROM PlayData.PlayData
 WHERE gameName LIKE '%Dice Throne%'
 GROUP BY playID, gameName
 ```
 
 ```DiceThroneRoles
-SELECT DISTINCT role, team, TeamRole
+SELECT DISTINCT 
+       role
+      ,team
+      ,TeamRole
+      ,CASE WHEN role IN ('Barbarian', 'Moon Elf', 'Paladin', 'Monk', 'Shadow Thief', 'Treant', 'Ninja', 'Pyromancer') THEN 'Season 1'
+            WHEN role IN ('Cursed Pirate', 'Artificer', 'Seraph', 'Gunslinger', 'Tactician', 'Huntress', 'Vampire Lord', 'Samurai') THEN 'Season 2'
+            WHEN role IN ('Black Panther', 'Black Widow', 'Captain Marvel', 'Dr. Strange', 'Thor', 'Spiderman', 'Scarlett Witch', 'Loki') THEN 'Marvel'
+            WHEN role IN ('Iceman', 'Storm', 'Wolverine', 'Deadpool', 'Psylock', 'Gambit', 'Cyclops', 'Rogue', 'Jean Gray') THEN 'X-Men'
+            WHEN role IN ('Santa', 'Krampus') THEN 'Santa vs Krampus'
+            WHEN role IN ('Pale Lady', 'Raveness', 'Headless Horseman', 'Necromancer') THEN 'Outcasts'
+            ELSE null END AS roleSet
 FROM PlayData.PlayData
 WHERE gameName LIKE '%Dice Throne%' 
 ```
@@ -73,7 +85,7 @@ GROUP BY playerName
 HAVING Plays >= ${inputs.minGames}
 ```
 
-```roleonly
+```sql roleonly
 SELECT role
       ,COUNT(m.playID) AS Plays
       ,SUM(CASE WHEN winner = true THEN 1 ELSE 0 END) AS Wins
@@ -108,3 +120,87 @@ HAVING Plays >= ${inputs.minGames}
         <Column id="Win Rate" fmt="##%"/>
     </DataTable>
  {/if}
+
+## Head to Head Matchups
+
+<Dropdown data={DiceThroneRoles}
+    title="Box" 
+    name=box 
+    value=roleSet 
+    multiple=true 
+    selectAllByDefault=true
+    where="roleSet IS NOT NULL"
+/>
+    
+
+```sql headtohead
+WITH baseRoles AS (
+    SELECT DISTINCT 
+           m.role AS P1_Role
+          ,m.roleSet AS P1_Role_Set
+          ,s.role AS P2_Role
+          ,s.roleSet AS P2_Role_Set
+    FROM ${DiceThroneRoles} AS  m
+    CROSS JOIN ${DiceThroneRoles} AS s
+),
+p1plays AS (
+    SELECT DISTINCT playID, role, winner
+    FROM PlayData.PlayData
+    WHERE playID IN (SELECT playID FROM ${DiceThronePlays} WHERE Players=2 AND HasStartPlayer=true)
+      AND startPlayer = true
+),
+p2plays AS (
+    SELECT DISTINCT playID, role, winner
+    FROM PlayData.PlayData
+    WHERE playID IN (SELECT playID FROM ${DiceThronePlays} WHERE Players=2 AND HasStartPlayer=true)
+      AND startPlayer = false
+),
+preppedplays AS (
+    SELECT p1.role AS P1_Role
+          ,p2.role AS P2_Role
+          ,SUM(CASE WHEN p1.winner = true THEN 1 ELSE 0 END) AS P1_Wins
+          ,SUM(CASE WHEN p2.winner = true THEN 1 ELSE 0 END) AS P2_Wins
+          ,COUNT(p1.playID) AS Plays
+          ,CAST(P1_Wins AS VARCHAR) || ' to ' || CAST(P2_Wins AS VARCHAR) AS Score
+    FROM p1plays AS p1
+    JOIN p2plays AS p2 ON p1.playID = p2.playID
+    GROUP BY p1.role, p2.role
+),
+final AS (
+    SELECT b.P1_Role AS Start_PLayer, b.P2_Role, COALESCE(Score, '0 to 0') AS Score
+    FROM baseRoles AS b
+    LEFT JOIN preppedplays AS pp ON pp.P1_Role = b.P1_Role AND pp.P2_Role = b.P2_Role
+    WHERE b.P1_Role_Set IN ${inputs.box.value}
+    AND b.P2_Role_Set IN ${inputs.box.value}
+    AND b.P1_Role != b.P2_Role
+    ORDER BY b.P1_Role
+)
+
+PIVOT final
+ON P2_Role
+USING FIRST(Score)
+```
+
+<DataTable data={headtohead} search=true sort="Start_PLayer"/>
+
+```sql startplayerwins
+SELECT DISTINCT
+       CASE WHEN d.Winners = 2 THEN 'tie' ELSE CAST(m.startPlayer AS VARCHAR) END AS Start_Player
+      ,COUNT(m.playID) AS Plays
+      ,SUM(CASE WHEN m.winner = true THEN 1 ELSE 0 END) AS Wins
+      ,Wins/Plays AS Win_Rate
+      ,Win_Rate - .5 AS Affect
+FROM PlayData.PlayData AS m
+JOIN ${DiceThronePlays} AS d ON m.playID = d.playID
+WHERE d.Players=2 
+  AND d.HasStartPlayer=true
+GROUP BY d.Winners, m.startPlayer
+```
+
+<DataTable data={startplayerwins} sort="Wins desc">
+    <Column id=Start_Player/>
+    <Column id=Plays/>
+    <Column id=Wins/>
+    <Column id=Win_Rate fmt=pct/>
+    <Column id=Affect fmt=pct contentType=delta/>
+</DataTable>
