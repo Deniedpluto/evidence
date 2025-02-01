@@ -31,6 +31,15 @@ FROM PlayData.PlayData
 WHERE gameName LIKE '%Dice Throne%' 
 ```
 
+```PlaysRoleFixed
+SELECT playerName
+      ,gameName
+      ,CASE WHEN gameName ='Dice Throne Adventures' THEN teamRole ELSE role END AS role
+      ,playID
+      ,winner
+FROM PlayData.PlayData
+```
+
 # Overall Summary
 
 <ButtonGroup title="Game" name=gameName>
@@ -49,7 +58,7 @@ WHERE gameName LIKE '%Dice Throne%'
 <Slider
     title="Minumum Games" 
     name=minGames
-    defaultValue=5
+    defaultValue=0
     min=0
     max=30
     size=small
@@ -62,21 +71,25 @@ WHERE gameName LIKE '%Dice Throne%'
 
 ```playerrole
 SELECT playerName AS Player
-      ,role
+      ,m.role
+      ,r.roleSet AS Box
       ,COUNT(m.playID) AS Plays
-      ,SUM(CASE WHEN winner = true THEN 1 ELSE 0 END) AS Wins
+      ,SUM(CASE WHEN Winners = 2 THEN 1 ELSE 0 END) AS Ties
+      ,SUM(CASE WHEN winner = true THEN 1 ELSE 0 END) - Ties AS Wins
       ,Wins/Plays AS "Win Rate"
-FROM PlayData.PlayData AS m
-JOIN ${DiceThronePlays} AS p ON m.playID = p.playID 
+FROM ${PlaysRoleFixed} AS m
+JOIN ${DiceThronePlays} AS p ON m.playID = p.playID
+JOIN ${DiceThroneRoles} AS r ON m.role = r.role
 WHERE m.gameName IN ${inputs.gameName} ${inputs.match}
-GROUP BY playerName, role
+GROUP BY playerName, m.role, r.roleSet
 HAVING Plays >= ${inputs.minGames}
 ```
 
 ```playeronly
 SELECT playerName AS Player
       ,COUNT(m.playID) AS Plays
-      ,SUM(CASE WHEN winner = true THEN 1 ELSE 0 END) AS Wins
+      ,SUM(CASE WHEN Winners = 2 THEN 1 ELSE 0 END) AS Ties
+      ,SUM(CASE WHEN winner = true THEN 1 ELSE 0 END) - Ties AS Wins
       ,Wins/Plays AS "Win Rate"
 FROM PlayData.PlayData AS m
 JOIN ${DiceThronePlays} AS p ON m.playID = p.playID 
@@ -86,14 +99,17 @@ HAVING Plays >= ${inputs.minGames}
 ```
 
 ```sql roleonly
-SELECT role
+SELECT m.role
+      ,r.roleSet AS Box
       ,COUNT(m.playID) AS Plays
-      ,SUM(CASE WHEN winner = true THEN 1 ELSE 0 END) AS Wins
+      ,SUM(CASE WHEN Winners = 2 THEN 1 ELSE 0 END) AS Ties
+      ,SUM(CASE WHEN winner = true THEN 1 ELSE 0 END) - Ties AS Wins
       ,Wins/Plays AS "Win Rate"
-FROM PlayData.PlayData AS m
+FROM ${PlaysRoleFixed} AS m
 JOIN ${DiceThronePlays} AS p ON m.playID = p.playID 
+JOIN ${DiceThroneRoles} AS r ON m.role = r.role
 WHERE m.gameName IN ${inputs.gameName} ${inputs.match}
-GROUP BY role
+GROUP BY m.role, r.roleSet
 HAVING Plays >= ${inputs.minGames}
 ```
  
@@ -101,23 +117,28 @@ HAVING Plays >= ${inputs.minGames}
     <DataTable data={playeronly} search=true sort="Plays desc" totalRow=true>
         <Column id=Player/>
         <Column id=Plays />
-        <Column id=Wins title="Total Time"/>
-        <Column id="Win Rate" fmt="##%"/>
+        <Column id=Wins/>
+        <Column id=Ties/>
+        <Column id="Win Rate" fmt=pct totalAgg=""/>
     </DataTable>
 {:else if inputs.tableView=="playerrole"}
     <DataTable data={playerrole} search=true sort="Plays desc" totalRow=true>
         <Column id=Player/>
         <Column id=role/>
+        <Column id=Box/>
         <Column id=Plays/>
         <Column id=Wins/>
-        <Column id="Win Rate" fmt="##%"/>
-    </DataTable>/>
+        <Column id=Ties/>
+        <Column id="Win Rate" fmt=pct totalAgg=""/>
+    </DataTable>
  {:else}
     <DataTable data={roleonly} search=true sort="Plays desc" totalRow=true>
         <Column id=role/>
+        <Column id=Box/>
         <Column id=Plays />
         <Column id=Wins/>
-        <Column id="Win Rate" fmt="##%"/>
+        <Column id=Ties/>
+        <Column id="Win Rate" fmt=pct totalAgg=""/>
     </DataTable>
  {/if}
 
@@ -181,8 +202,6 @@ ON P2_Role
 USING FIRST(Score)
 ```
 
-<DataTable data={headtohead} search=true sort="Start_PLayer"/>
-
 ```sql startplayerwins
 SELECT DISTINCT
        CASE WHEN d.Winners = 2 THEN 'tie' ELSE CAST(m.startPlayer AS VARCHAR) END AS Start_Player
@@ -194,6 +213,7 @@ FROM PlayData.PlayData AS m
 JOIN ${DiceThronePlays} AS d ON m.playID = d.playID
 WHERE d.Players=2 
   AND d.HasStartPlayer=true
+  AND d.Winners=1
 GROUP BY d.Winners, m.startPlayer
 ```
 
@@ -203,4 +223,32 @@ GROUP BY d.Winners, m.startPlayer
     <Column id=Wins/>
     <Column id=Win_Rate fmt=pct/>
     <Column id=Affect fmt=pct contentType=delta/>
+</DataTable>
+
+<DataTable data={headtohead} search=true sort="Start_PLayer"/>
+
+## Dice Throne Adventures
+
+```DTA
+SELECT role AS Team_Name
+      ,teamRole AS Role
+      ,playerName AS Player_Name
+      ,COUNT(DISTINCT board) AS Levels_Played
+      ,COUNT(playID) AS Plays
+      ,SUM(CASE WHEN winner=true THEN 1 ELSE 0 END) AS Wins
+      ,SUM(CAST(score AS INT)) AS Score 
+      ,Wins/Plays AS Win_Rate
+FROM PlayData.PlayData
+WHERE gameName='Dice Throne Adventures'
+GROUP BY teamRole, role, playerName
+```
+
+<DataTable data={DTA} search=true sort="Plays desc" groupBy="Team_Name">
+    <Column id=Team_Name/>
+    <Column id=Role/>
+    <Column id=Player_Name/>
+    <Column id=Plays/>
+    <Column id=Wins/>
+    <Column id=Score/>
+    <Column id=Win_Rate fmt=pct/>
 </DataTable>
