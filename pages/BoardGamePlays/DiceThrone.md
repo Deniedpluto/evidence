@@ -142,6 +142,35 @@ HAVING Plays >= ${inputs.minGames}
     </DataTable>
  {/if}
 
+ {#if inputs.tableView=="playeronly"}
+    <DataTable data={playeronly} search=true sort="Plays desc" totalRow=true>
+        <Column id=Player/>
+        <Column id=Plays />
+        <Column id=Wins/>
+        <Column id=Ties/>
+        <Column id="Win Rate" fmt=pct totalAgg=""/>
+    </DataTable>
+{:else if inputs.tableView=="playerrole"}
+    <DataTable data={playerrole} search=true sort="Plays desc" totalRow=true>
+        <Column id=Player/>
+        <Column id=role/>
+        <Column id=Box/>
+        <Column id=Plays/>
+        <Column id=Wins/>
+        <Column id=Ties/>
+        <Column id="Win Rate" fmt=pct totalAgg=""/>
+    </DataTable>
+ {:else}
+    <DataTable data={roleonly} search=true sort="Plays desc" totalRow=true>
+        <Column id=role/>
+        <Column id=Box/>
+        <Column id=Plays />
+        <Column id=Wins/>
+        <Column id=Ties/>
+        <Column id="Win Rate" fmt=pct totalAgg=""/>
+    </DataTable>
+ {/if}
+
 ## Head to Head Matchups
 
 <Dropdown data={DiceThroneRoles}

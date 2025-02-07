@@ -53,16 +53,17 @@ WHERE RoastClean = '${inputs.Roast.value}'
   AND "Shot Quality" IS NOT NULL;
 ```
 
-<BarChart data={FullGrindAnalysis}
-    x="Roast Shot" 
-    y="Shot Time" 
-    seriesOrder={["Poor", "Okay", "Good", "Great"]}
-    series="Shot Quality"
+<Chart data={FullGrindAnalysis}
+    x="Roast Shot"
+    seriesOrder={["Poor", "Okay", "Good", "Great", "Grind Setting"]}
     seriesColors={{
         "Poor":'#8c271e',
         "Okay":'#a3b9c9',
         "Good":'#7CE577',
         "Great":'#09814a',
+        "Grind Setting":'#000000',
         }}>
+    <Bar y="Shot Time" series="Shot Quality" seriesOrder={["Poor", "Okay", "Good", "Great"]}/>
+    <Line y="Grind Setting" />
     <ReferenceArea yMin=25 yMax=30 label='Ideal Shot Timing'/>
-</BarChart>
+</Chart>

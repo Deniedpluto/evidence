@@ -132,9 +132,9 @@ GROUP BY "Shot Time", "Shot Quality"
         "Okay":'#a3b9c9',
         "Good":'#7CE577',
         "Great":'#09814a',
-        }}
-/>
-
+        }}>
+    <ReferenceArea xMin=25 xMax=30 label='Ideal Shot Timing'/>
+</BarChart>
 
 ## Freshness and Shot Quality Over Time
 
@@ -179,9 +179,7 @@ This scatter plot shows the freshness of each shot over time. The color of the d
     name=grinds
     min=0
     max=30
-    step=1
     defaultValue=10
-    size=small
 />
 
 ```BestFreshness
@@ -194,7 +192,7 @@ SELECT A."Shot Quality"
     ,COUNT(A."Shot Quality") AS Shots
     ,B.TotalShots
     ,COUNT(A."Shot Quality")/B.TotalShots AS ShotRatio
-    ,CAST(A.Freshness AS VARCHAR) AS Freshness
+    ,A.Freshness
 FROM EspressoData.EspressoData AS A
 JOIN (
     SELECT Freshness
@@ -205,7 +203,7 @@ WHERE A.Roast <> 'Event'
   AND A."Shot Quality" IS NOT NULL
 GROUP BY A."Shot Quality", A.Freshness, B.TotalShots
 HAVING TotalShots >= ${inputs.grinds}
-ORDER BY Freshness;
+ORDER BY A.Freshness;
 ```
 
 <BarChart data={BestFreshness}
@@ -215,7 +213,6 @@ ORDER BY Freshness;
     y=ShotRatio 
     series="Shot Quality"
     type=stacked100
-    swapXY=true 
     title="Shot Quality Distribution by Freshness" 
     xtitle="Shot Quality" 
     ytitle="Freshness" 
