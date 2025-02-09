@@ -69,6 +69,8 @@ FROM PlayData.PlayData
     <ButtonGroupItem valueLabel="Role Only" value='roleonly'/>
 </ButtonGroup>
 
+<!--- This code does not work {inputs.tableView=="playeronly" ? "value1" : "roleonly" ? "value2" : "playerrole" ? "value3" : "value4"} --->
+
 ```playerrole
 SELECT playerName AS Player
       ,m.role
@@ -142,34 +144,7 @@ HAVING Plays >= ${inputs.minGames}
     </DataTable>
  {/if}
 
- {#if inputs.tableView=="playeronly"}
-    <DataTable data={playeronly} search=true sort="Plays desc" totalRow=true>
-        <Column id=Player/>
-        <Column id=Plays />
-        <Column id=Wins/>
-        <Column id=Ties/>
-        <Column id="Win Rate" fmt=pct totalAgg=""/>
-    </DataTable>
-{:else if inputs.tableView=="playerrole"}
-    <DataTable data={playerrole} search=true sort="Plays desc" totalRow=true>
-        <Column id=Player/>
-        <Column id=role/>
-        <Column id=Box/>
-        <Column id=Plays/>
-        <Column id=Wins/>
-        <Column id=Ties/>
-        <Column id="Win Rate" fmt=pct totalAgg=""/>
-    </DataTable>
- {:else}
-    <DataTable data={roleonly} search=true sort="Plays desc" totalRow=true>
-        <Column id=role/>
-        <Column id=Box/>
-        <Column id=Plays />
-        <Column id=Wins/>
-        <Column id=Ties/>
-        <Column id="Win Rate" fmt=pct totalAgg=""/>
-    </DataTable>
- {/if}
+
 
 ## Head to Head Matchups
 

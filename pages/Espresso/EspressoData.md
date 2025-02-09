@@ -132,9 +132,8 @@ GROUP BY "Shot Time", "Shot Quality"
         "Okay":'#a3b9c9',
         "Good":'#7CE577',
         "Great":'#09814a',
-        }}>
-    <ReferenceArea xMin=25 xMax=30 label='Ideal Shot Timing'/>
-</BarChart>
+        }}
+/>
 
 ## Freshness and Shot Quality Over Time
 
@@ -147,13 +146,13 @@ This scatter plot shows the freshness of each shot over time. The color of the d
     selectAllByDefault=true
 />
 
+<!--defaultValue=110 - This is currently broken -->
 <Slider
     title="Freshness" 
     name=freshness
     min=0
     max=110
     step=5
-    defaultValue=110
     size=large
 />
 
@@ -174,12 +173,12 @@ This scatter plot shows the freshness of each shot over time. The color of the d
 
 ## Best Freshness
 
+<!-- defaultValue=10 - This is currently not working -->
 <Slider
     title="Minimum Grinds" 
     name=grinds
     min=0
     max=30
-    defaultValue=10
 />
 
 ```BestFreshness
