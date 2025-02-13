@@ -1,0 +1,4 @@
+# BGG Dashboard
+I created this dashboard originally in PowerBI back in 2019 as part of an onboarding project at Decisive Data. The goal was to test the implementation of pulling data directly from an API into PowerBI. Since the original design it has been expanded multiple times and I have replaced the live connection to the BGG API with a static data source due to additional restrictions being added to the API itself. The current refresh process is manual, though it could be scheduled. 
+
+<iframe title="BGG Dashboard" width="1024" height="1060" src="https://app.powerbi.com/view?r=eyJrIjoiYTg5YTI5YjYtOTgwNS00Nzk4LWI1OTktOWZlNTUzMjU0YmM3IiwidCI6IjUxZWUzM2YyLWUxOTctNDQ5Mi1hYzAxLWMxNjI2MmQwMDI2OSJ9" frameborder="0" allowFullScreen="true"></iframe>

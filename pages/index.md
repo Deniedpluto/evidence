@@ -18,10 +18,10 @@ As a certified nerd, I love to collect data and mine it for insights. Over the y
 
 - [Board Game Plays](BoardGamePlays/BoardGamePlaysHome)
 - [Espresso Shot Analysis](Espresso/EspressoData)
-- [MTG Commander Analysis](Commander/CommanderHome/)
-- [Custom MTG D&D Set](https://deniedpluto.github.io/)
+- [MTG Commander Analysis](Commander/CommanderHome)
+- [Custom MTG D&D Set](https://deniedpluto.github.io)
 - *Board Game Recommendation Engine*
-- *Board Game Geek Analysis*
+- [Board Game Geek Analysis](BGGDashboard/BGGDashboard)
 
 ## Overview of the data
 

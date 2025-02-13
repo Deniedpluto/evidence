@@ -98,6 +98,21 @@
           "href": "/Commander/RankingProcess"
         }
       ]
+    },
+    {
+      "label":"BGGDashboard",
+      "order": 4,
+      "show": true,
+      "title": "Board Game Geek",
+      "children": [
+        {
+          "label": "PBI Dashboard",
+          "order": 1,
+          "show": true,
+          "title": "Home",
+          "href": "/BGGDashboard/BGGDashboard"
+        }
+      ]
     }
   ]
   
