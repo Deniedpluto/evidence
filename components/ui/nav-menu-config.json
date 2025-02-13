@@ -41,15 +41,22 @@
           "href": "/Espresso/EspressoData"
         },
         {
-          "label": "EspressoHighlights",
+          "label": "MySetup",
           "order": 2,
+          "show": true,
+          "title": "My Setup",
+          "href": "/Espresso/MySetup"
+        },
+        {
+          "label": "EspressoHighlights",
+          "order": 3,
           "show": true,
           "title": "Highlights",
           "href": "/Espresso/EspressoHighlights"
         },
         {
           "label": "GrindAnalysis",
-          "order": 3,
+          "order": 4,
           "show": true,
           "title": "Grind Analysis",
           "href": "/Espresso/GrindAnalysis"

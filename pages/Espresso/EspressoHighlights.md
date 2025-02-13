@@ -4,13 +4,16 @@ sidebar_position: 2
 ---
 
 ```MonthlyShots
-SELECT strftime('%b %y', "Shot Date") AS "Month"
+SELECT DATE_TRUNC('Month', "Shot Date") AS "Month"
+      ,YEAR("Shot Date") *100 + MONTH("Shot Date") AS "MonthSort"
       ,"Shot Quality"
       ,COUNT("Shot Number") AS "Total Shots"
 FROM EspressoData.EspressoData
 WHERE Roast <> 'Event'
   AND "Shot Quality" IS NOT NULL
-GROUP BY "Month", "Shot Quality"
+  AND "Shot Date" IS NOT NULL
+GROUP BY "Month", "Shot Quality", "MonthSort"
+ORDER BY MonthSort
 ```
 
 ```MonthlyShotsByRoast
@@ -198,7 +201,6 @@ GROUP BY "Shot Quality"
 </ButtonGroup>
 
 <BarChart data={MonthlyShots}
-    sort="TotalShots"
     seriesOrder={["Poor", "Okay", "Good", "Great"]}
     x=Month 
     y="Total Shots" 

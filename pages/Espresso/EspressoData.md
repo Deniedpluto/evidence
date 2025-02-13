@@ -37,6 +37,8 @@ GROUP BY Roast
 
 The this table shows a summary of the data collected for each roast. The data includes the number of bags, grinds, average freshness, median grind setting, recommended grind setting, average shot time, and shot quality rates. I don't record every shot pulled since my Wife and some family make their own shots.
 
+Any roast without a prefix comes from a local roaster, [Wild Goose](https://www.wildgoosecoffee.com/). The other prominent roaster is an old favorite from Leavenworth, WA, [J5 Coffee](https://www.j5coffee.com/). Both are excellent roasters and I highly recommend them.
+
 <DataTable data={EspressoSummary} search=true sort="Grinds desc">
     <Column id=Roast/>
     <Column id="Bags"/>
