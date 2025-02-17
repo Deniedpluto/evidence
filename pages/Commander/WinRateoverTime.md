@@ -28,7 +28,6 @@ FROM ${actualMatches}
     maxColumn=LastMatch
     step=5
     size=large
-    defaultValue = 50
 />
 
 ### Rolling Win Rate Table
