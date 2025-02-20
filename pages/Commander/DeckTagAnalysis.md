@@ -24,7 +24,7 @@ SELECT Tag
       ,SUM(Played) AS "Total Played"
       ,SUM(Wins) AS "Total Wins"
       ,SUM(Wins)/SUM(Played) AS "Win Rate"
-FROM Commander_Decks.CommanderDecksWRA AS cd
+FROM CommanderDecks.CommanderDecksWRA AS cd
 JOIN CommanderTags.CommanderTags AS cdt ON cd.ID = cdt."Deck ID"
 WHERE Tag IN ${inputs.Tags.value}
   AND "Tag Type" IN ${inputs.tagtype.value}
@@ -36,7 +36,7 @@ ORDER BY "Total Played" DESC
 
 ```DeckWithTags
 SELECT cd.*, cdt."Tag Type", cdt.Tag
-FROM Commander_Decks.CommanderDecksWRA AS cd
+FROM CommanderDecks.CommanderDecksWRA AS cd
 JOIN CommanderTags.CommanderTags AS cdt ON cd.ID = cdt."Deck ID"
 WHERE Tag IN ${inputs.Tags.value}
   AND "Tag Type" IN ${inputs.tagtype.value}

@@ -18,7 +18,7 @@ Most of us keep our decks on [Moxfield](https://www,moxfield.com)
 I have also been building out a set/block of magic cards from my experiences play D&D. You can view them [here](https://deniedpluto.github.io/).
 
 ```Owners
-SELECT DISTINCT Owner FROM Commander_Decks.CommanderDecksWRA
+SELECT DISTINCT Owner FROM CommanderDecks.CommanderDecksWRA
 WHERE Meta IN ${inputs.Meta}
 ```
 <ButtonGroup name=Meta>
@@ -63,7 +63,7 @@ SELECT Meta
     ,"Bayes STR" AS "Bayes Strength"
     ,"Norm Bayes STR" AS "Standardized Strength"
     ,Active
-FROM Commander_Decks.CommanderDecksWRA
+FROM CommanderDecks.CommanderDecksWRA
 WHERE Played > ${inputs.mingames}
   AND Owner IN ${inputs.Owner.value}
   AND Active IN (${inputs.DeckStatus})
@@ -98,7 +98,7 @@ SELECT Meta
       ,AVG(WRA) AS "Average Win Rate Against"
       ,AVG("Bayes STR") AS "Average Bayes Strength"
       ,AVG("Norm Bayes STR") AS "Average Standardized Strength"
-FROM Commander_Decks.CommanderDecksWRA
+FROM CommanderDecks.CommanderDecksWRA
 WHERE Played > ${inputs.mingames}
   AND Owner IN ${inputs.Owner.value}
   AND Active IN (${inputs.DeckStatus})
@@ -128,9 +128,9 @@ WITH recentplays AS (
         ,CASE WHEN Place = 1 THEN 'W! - ' ELSE '' END || Deck AS PlayDetails
         ,ROW_NUMBER() OVER(PARTITION BY Match ORDER BY Owner) AS rn
         ,PlayerOrder
-  FROM Commander_History.CommanderHistory
+  FROM CommanderHistory.CommanderHistory
   WHERE Match >= (SELECT MAX(Match) - 9 
-                  FROM Commander_History.CommanderHistory 
+                  FROM CommanderHistory.CommanderHistory 
                   WHERE Meta IN ${inputs.Meta}
                 )
     AND Meta IN ${inputs.Meta}
@@ -166,7 +166,7 @@ SELECT CASE PlayerOrder WHEN 1 THEN '1'
       ,SUM(CASE WHEN Place = 1 THEN 1 ELSE 0 END) AS Wins
       ,COUNT(Match) AS Played
       ,Wins/Played AS "Win Rate"
-FROM Commander_History.CommanderHistory
+FROM CommanderHistory.CommanderHistory
 GROUP BY PlayerOrder
 ORDER BY PlayerOrder
 ```

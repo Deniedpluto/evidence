@@ -8,7 +8,7 @@ The following table shows the rolling win rate of each player over the last game
 ```actualMatches
 SELECT *,
        DENSE_RANK() OVER(PARTITION BY Meta ORDER BY Match) AS MatchNumber
-FROM Commander_History.CommanderHistory
+FROM CommanderHistory.CommanderHistory
 WHERE Match <> 0
 ```
 
@@ -47,7 +47,7 @@ allgames AS (
     ,SUM(CASE WHEN Place = 1 THEN 1 ELSE 0 END) AS "Total Wins"
     ,COUNT() AS "Total Games"
     ,"Total Wins" / "Total Games" AS "Overall Win Rate"
-FROM Commander_History.CommanderHistory
+FROM CommanderHistory.CommanderHistory
 WHERE Match <> 0
 GROUP BY Meta, Owner
 )
@@ -116,27 +116,27 @@ The graph above shows the rolling average win rate by player over the last {inpu
 ### Win Rate with Deck Selection
 
 ```DeniedplutoDecks
-SELECT DISTINCT Deck FROM Commander_Decks.CommanderDecksWRA
+SELECT DISTINCT Deck FROM CommanderDecks.CommanderDecksWRA
 WHERE Owner = 'Deniedpluto'
 ```
 ```WedgetableDecks
-SELECT DISTINCT Deck FROM Commander_Decks.CommanderDecksWRA
+SELECT DISTINCT Deck FROM CommanderDecks.CommanderDecksWRA
 WHERE Owner = 'Wedgetable'
 ```
 ```GhstflameDecks
-SELECT DISTINCT Deck FROM Commander_Decks.CommanderDecksWRA
+SELECT DISTINCT Deck FROM CommanderDecks.CommanderDecksWRA
 WHERE Owner = 'Ghstflame'
 ```
 ```TankDecks
-SELECT DISTINCT Deck FROM Commander_Decks.CommanderDecksWRA
+SELECT DISTINCT Deck FROM CommanderDecks.CommanderDecksWRA
 WHERE Owner = 'Tank'
 ```
 ```RedFerretDecks
-SELECT DISTINCT Deck FROM Commander_Decks.CommanderDecksWRA
+SELECT DISTINCT Deck FROM CommanderDecks.CommanderDecksWRA
 WHERE Owner = 'RedFerret'
 ```
 ```MacrosageDecks
-SELECT DISTINCT Deck FROM Commander_Decks.CommanderDecksWRA
+SELECT DISTINCT Deck FROM CommanderDecks.CommanderDecksWRA
 WHERE Owner = 'Macrosage'
 ```
 
