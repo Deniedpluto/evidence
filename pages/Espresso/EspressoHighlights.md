@@ -80,60 +80,63 @@ FROM ${MonthlyShotsByRoast}
 WHERE MonthDiff ${inputs.TimePeriod}
 ```
 ### All Roasts
-<BigValue 
-    data={TotalShotsCM} 
-    value="Total Shots" 
-    title="Total Shots"
-    maxWidth=30%
-    minWidth=30%
-/>
-<BigValue 
-    data={GreatShotsCM} 
-    value="Great Shots"
-    title="Great Shots"
-    maxWidth=30%
-    minWidth=30%
-/>
-<BigValue 
-    data={GreatShotRateCM} 
-    value="Great Shot Rate" fmt="0%" 
-    title="Great Shot Rate"
-    maxWidth=30%
-    minWidth=30%
-/>
+<Grid cols=3>
+  <BigValue 
+      data={TotalShotsCM} 
+      value="Total Shots" 
+      title="Total Shots"
+      maxWidth=30%
+      minWidth=30%
+  />
+  <BigValue 
+      data={GreatShotsCM} 
+      value="Great Shots"
+      title="Great Shots"
+      maxWidth=30%
+      minWidth=30%
+  />
+  <BigValue 
+      data={GreatShotRateCM} 
+      value="Great Shot Rate" fmt="0%" 
+      title="Great Shot Rate"
+      maxWidth=30%
+      minWidth=30%
+  />
+</Grid>
 
 ### Top Roast
-<BigValue 
-    data={TopRoastCM} 
-    value="Total Shots" 
-    title="Most Shots"
-    comparison=Roast
-    comparisonDelta=false
-    comparisonTitle=""
-    maxWidth=30%    
-    minWidth=30%
-/>`
-<BigValue 
-    data={TopGreatCM} 
-    value="Great Shots" 
-    title="Great Shots"
-    comparison=Roast
-    comparisonDelta=false
-    comparisonTitle=""
-    maxWidth=30%    
-    minWidth=30%
-/>
-<BigValue 
-    data={TopGreatRateCM} 
-    value="Great Shot Rate" fmt="0%"
-    title="Great Shot Rate"
-    comparison=Roast
-    comparisonDelta=false
-    comparisonTitle=""
-    maxWidth=30%    
-    minWidth=30%
-/>
-
+<Grid cols=3>
+  <BigValue 
+      data={TopRoastCM} 
+      value="Total Shots" 
+      title="Most Shots"
+      comparison=Roast
+      comparisonDelta=false
+      comparisonTitle=""
+      maxWidth=30%    
+      minWidth=30%
+  />
+  <BigValue 
+      data={TopGreatCM} 
+      value="Great Shots" 
+      title="Great Shots"
+      comparison=Roast
+      comparisonDelta=false
+      comparisonTitle=""
+      maxWidth=30%    
+      minWidth=30%
+  />
+  <BigValue 
+      data={TopGreatRateCM} 
+      value="Great Shot Rate" fmt="0%"
+      title="Great Shot Rate"
+      comparison=Roast
+      comparisonDelta=false
+      comparisonTitle=""
+      maxWidth=30%    
+      minWidth=30%
+  />
+</Grid>
 
 
 ```ShotsPM

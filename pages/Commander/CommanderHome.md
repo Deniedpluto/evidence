@@ -171,13 +171,46 @@ GROUP BY PlayerOrder
 ORDER BY PlayerOrder
 ```
 
-<BarChart data={PlayOrder}
-    x=PlayerOrder
-    y="Win Rate"
-    yGridlines=false
-    yAxisLabels=false
-    labelFmt="##%"
-    labels=true
-    >
-    <ReferenceLine y=.25 label="Expected Win Rate"/>
-</BarChart>
+```PlayOrder2
+SELECT Players
+      ,CASE Winner WHEN 1 THEN '1'
+                   WHEN 2 THEN '2'
+                   WHEN 3 THEN '3'
+                   WHEN 4 THEN '4' ELSE 'Unordered' END AS PlayerOrder
+      ,COUNT(Match) AS Wins
+      ,Games
+      ,Wins/Games AS "Win Rate"
+FROM (SELECT Match,
+             SUM(CASE WHEN Place == 1 THEN PlayerOrder ELSE 0 END) AS Winner
+            ,COUNT(PlayerOrder) AS Players
+            ,COUNT(Match) OVER(PARTITION BY Players) AS Games
+      FROM CommanderHistory.CommanderHistory
+      WHERE PlayerOrder IS NOT NULL
+      GROUP BY Match
+      )
+GRoup BY Winner, Players, Games
+```
+<Grid cols=2>
+    <BarChart data={PlayOrder2.filter(d => d.Players == 3)}
+        title="3-Player Position Win Rate"
+        x=PlayerOrder
+        y="Win Rate"
+        yGridlines=false
+        yAxisLabels=false
+        labelFmt="##%"
+        labels=true
+        >
+        <ReferenceLine y=.33 label="Expected Win Rate"/>
+    </BarChart>
+        <BarChart data={PlayOrder2.filter(d => d.Players == 4)}
+        title="4-Player Position Win Rate"
+        x=PlayerOrder
+        y="Win Rate"
+        yGridlines=false
+        yAxisLabels=false
+        labelFmt="##%"
+        labels=true
+        >
+        <ReferenceLine y=.25 label="Expected Win Rate"/>
+    </BarChart>
+</Grid>
