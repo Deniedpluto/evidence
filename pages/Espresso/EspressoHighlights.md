@@ -37,7 +37,36 @@ Here is a collection of some the insights into my coffee habits. You can select 
     <ButtonGroupItem valueLabel="All Time" value=">=0"/>
 </ButtonGroup>
 
-```TopRoastCM
+
+```ShotStats
+SELECT SUM(Grinds) AS "Total Shots"
+      ,SUM(CASE WHEN "Shot Quality"='Great' THEN Grinds ELSE 0 END) AS "Great Shots"
+      ,SUM(CASE WHEN "Shot Quality"='Great' THEN Grinds ELSE 0 END)/SUM(Grinds) AS "Great Shot Rate"
+FROM ${MonthlyShotsByRoast} 
+WHERE MonthDiff ${inputs.TimePeriod}
+```
+
+### All Roasts
+<Grid cols=3>
+  <BigValue 
+      data={ShotStats} 
+      value="Total Shots" 
+      title="Total Shots"
+  />
+  <BigValue 
+      data={ShotStats} 
+      value="Great Shots"
+      title="Great Shots"
+  />
+  <BigValue 
+      data={ShotStats} 
+      value="Great Shot Rate" fmt="0%" 
+      title="Great Shot Rate"
+  />
+</Grid>
+
+### Top Roast
+```TopRoast
 SELECT Roast
       ,SUM(Grinds) AS "Total Shots"
 FROM ${MonthlyShotsByRoast}
@@ -46,98 +75,89 @@ GROUP BY Roast
 ORDER BY "Total Shots" DESC
 LIMIT 1
 ```
-```TopGreatCM
+```TopGreat
 SELECT Roast
-      ,SUM(Grinds) AS "Great Shots"
-FROM ${MonthlyShotsByRoast}
-WHERE Roast = (SELECT Roast FROM ${TopRoastCM})
-  AND "Shot Quality" = 'Great'
-  AND MonthDiff ${inputs.TimePeriod}
-GROUP BY Roast
-```
-```TopGreatRateCM
-SELECT Roast
+      ,SUM(CASE WHEN "Shot Quality"='Great' THEN Grinds ELSE 0 END) AS "Great Shots"
       ,SUM(CASE WHEN "Shot Quality"='Great' THEN Grinds ELSE 0 END)/SUM(Grinds) AS "Great Shot Rate"
 FROM ${MonthlyShotsByRoast}
-WHERE Roast = (SELECT Roast FROM ${TopRoastCM})
+WHERE Roast = (SELECT Roast FROM ${TopRoast})
   AND MonthDiff ${inputs.TimePeriod}
 GROUP BY Roast
 ```
-```TotalShotsCM
-SELECT SUM(Grinds) AS "Total Shots"
-FROM ${MonthlyShotsByRoast}
-WHERE MonthDiff ${inputs.TimePeriod}
-```
-```GreatShotsCM
-SELECT SUM(Grinds) AS "Great Shots"
-FROM ${MonthlyShotsByRoast}
-WHERE MonthDiff ${inputs.TimePeriod}
-AND "Shot Quality" = 'Great'
-```
-```GreatShotRateCM
-SELECT SUM(CASE WHEN "Shot Quality"='Great' THEN Grinds ELSE 0 END)/SUM(Grinds) AS "Great Shot Rate"
-FROM ${MonthlyShotsByRoast}
-WHERE MonthDiff ${inputs.TimePeriod}
-```
-### All Roasts
 <Grid cols=3>
   <BigValue 
-      data={TotalShotsCM} 
-      value="Total Shots" 
-      title="Total Shots"
-      maxWidth=30%
-      minWidth=30%
-  />
-  <BigValue 
-      data={GreatShotsCM} 
-      value="Great Shots"
-      title="Great Shots"
-      maxWidth=30%
-      minWidth=30%
-  />
-  <BigValue 
-      data={GreatShotRateCM} 
-      value="Great Shot Rate" fmt="0%" 
-      title="Great Shot Rate"
-      maxWidth=30%
-      minWidth=30%
-  />
-</Grid>
-
-### Top Roast
-<Grid cols=3>
-  <BigValue 
-      data={TopRoastCM} 
+      data={TopRoast} 
       value="Total Shots" 
       title="Most Shots"
       comparison=Roast
       comparisonDelta=false
       comparisonTitle=""
-      maxWidth=30%    
-      minWidth=30%
   />
   <BigValue 
-      data={TopGreatCM} 
+      data={TopGreat} 
       value="Great Shots" 
       title="Great Shots"
       comparison=Roast
       comparisonDelta=false
       comparisonTitle=""
-      maxWidth=30%    
-      minWidth=30%
   />
   <BigValue 
-      data={TopGreatRateCM} 
+      data={TopGreat} 
       value="Great Shot Rate" fmt="0%"
       title="Great Shot Rate"
       comparison=Roast
       comparisonDelta=false
       comparisonTitle=""
-      maxWidth=30%    
-      minWidth=30%
   />
 </Grid>
 
+### Best Roasts
+```MostGreat
+SELECT Roast
+      ,SUM(CASE WHEN "Shot Quality"='Great' THEN Grinds ELSE 0 END) AS "Great Shots"
+      ,SUM(CASE WHEN "Shot Quality"='Great' THEN Grinds ELSE 0 END)/SUM(Grinds) AS "Great Shot Rate"
+FROM ${MonthlyShotsByRoast} 
+WHERE MonthDiff ${inputs.TimePeriod} 
+GROUP BY Roast 
+ORDER BY "Great Shot Rate" DESC 
+LIMIT 1
+```
+```BestRoast
+SELECT Roast
+      ,SUM(Grinds) AS "Total Shots"
+      ,SUM(CASE WHEN "Shot Quality"='Great' THEN Grinds ELSE 0 END)/SUM(Grinds) AS "Great Shot Rate"
+FROM ${MonthlyShotsByRoast}
+WHERE MonthDiff ${inputs.TimePeriod}
+  AND Roast = (SELECT Roast FROM ${MostGreat})
+GROUP BY Roast
+ORDER BY "Total Shots" DESC
+```
+<Grid cols=3>
+  <BigValue 
+      data={BestRoast} 
+      value="Total Shots" 
+      title="Total Shots"
+      comparison=Roast
+      comparisonDelta=false
+      comparisonTitle=""
+  />
+  <BigValue 
+      data={MostGreat} 
+      value="Great Shots" 
+      title="Great Shots"
+      comparison=Roast
+      comparisonDelta=false
+      comparisonTitle=""
+  />
+  <BigValue 
+      data={BestRoast} 
+      value="Great Shot Rate" fmt="0%"
+      title="Great Shot Rate"
+      comparison=Roast
+      comparisonDelta=false
+      comparisonTitle=""
+  />
+</Grid>
 
 ```ShotsPM
 SELECT Roast
@@ -172,6 +192,9 @@ GROUP BY "Shot Quality"
     yGridlines=false
     xBaseline=false
     yAxisLabels=false
+    labels=true
+    labelSize=14
+    showAllLabels=true
     seriesColors={{
         "Poor":'#8c271e',
         "Okay":'#a3b9c9',
