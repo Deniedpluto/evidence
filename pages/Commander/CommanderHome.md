@@ -154,6 +154,47 @@ ORDER BY Match desc
     <Column id="Player4"/>
 </DataTable>
 
+```lastgame
+SELECT max(Match) AS LastMatch
+FROM CommanderHistory.CommanderHistory
+```
+
+<Slider
+    title="Game Range" 
+    name=firstgame
+    data={lastgame}
+    maxColumn=LastMatch
+    size=large
+/>
+
+```Winners
+SELECT Owner
+      ,ROW_NUMBER() OVER(ORDER BY Match) AS Match
+      ,Place
+FROM CommanderHistory.CommanderHistory
+WHERE Place = 1
+    AND match >= ${inputs.firstgame}
+    AND Meta IN ${inputs.Meta}
+```
+
+<BarChart data={Winners}
+    title="Wins Over Time"
+    x=Match
+    y=Place
+    yGridlines=false
+    yAxisLabels=false
+    xAxisLabels=false
+    series=Owner
+    seriesColors={{
+        "RedFerret":'#DC143C',
+        "Macrosage":'#00FF7F',
+        "Tank":'#FFD700',
+        "Ghstflame":'#FF69B4',
+        "Wedgetable":'#228B22',
+        "Deniedpluto":'#4B0082',
+        "crazykid":'#1E90FF',
+        }}/>
+
 ## Player Order Analysis
 
 Play order tracking began on match 267. All future matches *should* have play order recorded. The "Unordered" column shows the average win rate before we started tracking play order. This is slightly higher than 25% since we sometimes play with only 3 players.
