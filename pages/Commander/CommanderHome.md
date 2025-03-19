@@ -229,7 +229,8 @@ FROM (SELECT Match,
       WHERE PlayerOrder IS NOT NULL
       GROUP BY Match
       )
-GRoup BY Winner, Players, Games
+GROUP BY Winner, Players, Games
+ORDER BY Players, PlayerOrder
 ```
 <Grid cols=2>
     <BarChart data={PlayOrder2.filter(d => d.Players == 3)}
@@ -254,4 +255,19 @@ GRoup BY Winner, Players, Games
         >
         <ReferenceLine y=.25 label="Expected Win Rate"/>
     </BarChart>
+</Grid>
+
+<Grid cols = 2>
+    <DataTable data={PlayOrder2.filter(d => d.Players == 3)}>
+        <Column id=PlayerOrder/>
+        <Column id=Wins/>
+        <Column id=Games/>
+        <Column id="Win Rate" fmt = "##.0%"/>
+    </DataTable>
+    <DataTable data={PlayOrder2.filter(d => d.Players == 4)}>
+        <Column id=PlayerOrder/>
+        <Column id=Wins/>
+        <Column id=Games/>
+        <Column id="Win Rate" fmt = "##.0%"/>
+    </DataTable>
 </Grid>

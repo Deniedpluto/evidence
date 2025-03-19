@@ -57,7 +57,6 @@ Any roast without a prefix comes from a local roaster, [Wild Goose](https://www.
     <Column id="Poor Shot Rate" fmt="##.0%"/>
     <Column id="Roast Dates"/>
 </DataTable>
-```
 
 ```ShotQuality
 SELECT A."Shot Quality"
