@@ -14,6 +14,7 @@ Most of us keep our decks on [Moxfield](https://www,moxfield.com)
   - [Tank](https://moxfield.com/users/T4nk09)
   - RedFerret
   - [Macrosage](https://www.moxfield.com/users/Macrosage)
+  - CrazyKid
 
 I have also been building out a set/block of magic cards from my experiences play D&D. You can view them [here](https://deniedpluto.github.io/).
 
@@ -33,8 +34,8 @@ WHERE Meta IN ${inputs.Meta}
     selectAllByDefault=true
 />
 <ButtonGroup name=DeckStatus>
-    <ButtonGroupItem valueLabel="All" value="0,1" default/>
-    <ButtonGroupItem valueLabel="Active" value="1" />
+    <ButtonGroupItem valueLabel="All" value="0,1"/>
+    <ButtonGroupItem valueLabel="Active" value="1" default/>
     <ButtonGroupItem valueLabel="Inactive" value="0"/>
 </ButtonGroup>
 <Slider
