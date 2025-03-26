@@ -16,19 +16,15 @@
 
 As a certified nerd, I love to collect data and mine it for insights. Over the years, I have collected data across many personal projects and now I am taking my first steps to bring the display of it all into a single place. Below you will find a list of my current data projects. There are a few that haven't been pulled together yet, but hopefully we will have them all live before the end of Q1 2025.
 
-- [Board Game Plays](BoardGamePlays/BoardGamePlaysHome)
 - [Espresso Shot Analysis](Espresso/EspressoData)
 - [MTG Commander Analysis](Commander/CommanderHome)
 - [Custom MTG D&D Set](https://deniedpluto.github.io)
 - *Board Game Recommendation Engine*
 - [Board Game Geek Analysis](BGGDashboard/BGGDashboard)
+- [Board Game Plays](BoardGamePlays/BoardGamePlaysHome)
+
 
 ## Overview of the data
-
-### Board Game Plays
-[Repo](https://github.com/Deniedpluto/BoardGamePlays)
-
-The board game plays data comes from the [BGStats app](https://www.bgstatsapp.com/). This is exported from the app as a json file and then parsed into (mostly) normalized tables in parquet format by a python script then loaded into Motherduck.
 
 ### Espresso Shot Analysis
 [Repo](https://github.com/Deniedpluto/motherduck_data_update)
@@ -54,3 +50,8 @@ I built this recommendation engine a few years ago as an extension of work I had
 [Repo](https://github.com/Deniedpluto/bgg-dashboard)
 
 Data for this project is pulled from another GitHub repo mainted by beefsack. The data is pulled down to form a subset of historical data that dates back to 2016. This data is transformed using a series of R Scripts that prep the data for dashboard. The final R Script pulls the current data from the BGG API to provide the most up to date information. The dashboard then can be refreshed to show the current data. A set of scripts for pulling and parsing review data also exist, but are not currently being run.
+
+### Board Game Plays
+[Repo](https://github.com/Deniedpluto/BoardGamePlays)
+
+The board game plays data comes from the [BGStats app](https://www.bgstatsapp.com/). This is exported from the app as a json file and then parsed into (mostly) normalized tables in parquet format by a python script then loaded into Motherduck.

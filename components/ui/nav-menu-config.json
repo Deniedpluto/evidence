@@ -6,28 +6,6 @@
       "title": "Home"
     },
     {
-      "label":"BoardGamePlays",
-      "order": 1,
-      "show": true,
-      "title": "Board Game Plays",
-      "children": [
-        {
-          "label": "BoardGamePlaysHome",
-          "order": 1,
-          "show": true,
-          "title": "Home",
-          "href": "/BoardGamePlays/BoardGamePlaysHome"
-        },
-        {
-          "label": "DiceThrone",
-          "order": 2,
-          "show": true,
-          "title": "Dice Throne",
-          "href": "/BoardGamePlays/DiceThrone"
-        }
-      ]
-    },
-    {
       "label":"Espresso",
       "order": 2,
       "show": true,
@@ -96,6 +74,28 @@
           "show": true,
           "title": "Ranking Process",
           "href": "/Commander/RankingProcess"
+        }
+      ]
+    },
+    {
+      "label":"BoardGamePlays",
+      "order": 1,
+      "show": true,
+      "title": "Board Game Plays",
+      "children": [
+        {
+          "label": "BoardGamePlaysHome",
+          "order": 1,
+          "show": true,
+          "title": "Home",
+          "href": "/BoardGamePlays/BoardGamePlaysHome"
+        },
+        {
+          "label": "DiceThrone",
+          "order": 2,
+          "show": true,
+          "title": "Dice Throne",
+          "href": "/BoardGamePlays/DiceThrone"
         }
       ]
     },

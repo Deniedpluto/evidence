@@ -243,7 +243,7 @@ ORDER BY Players, PlayerOrder
         labelFmt="##%"
         labels=true
         >
-        <ReferenceLine y=.33 label="Expected Win Rate"/>
+        <ReferenceLine y=.333 label="Expected Win Rate"/>
     </BarChart>
         <BarChart data={PlayOrder2.filter(d => d.Players == 4)}
         title="4-Player Position Win Rate"
