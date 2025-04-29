@@ -215,6 +215,7 @@ ORDER BY PlayerOrder
 
 ```PlayOrder2
 SELECT Players
+      --,WinnerName
       ,CASE Winner WHEN 1 THEN '1'
                    WHEN 2 THEN '2'
                    WHEN 3 THEN '3'
@@ -226,17 +227,19 @@ FROM (SELECT Match,
              SUM(CASE WHEN Place == 1 THEN PlayerOrder ELSE 0 END) AS Winner
             ,COUNT(PlayerOrder) AS Players
             ,COUNT(Match) OVER(PARTITION BY Players) AS Games
+            --,LIST(Owner) FILTER(PLACE == 1) AS WinnerName
       FROM CommanderHistory.CommanderHistory
       WHERE PlayerOrder IS NOT NULL
       GROUP BY Match
       )
-GROUP BY Winner, Players, Games
+GROUP BY Winner, Players, Games--, WinnerName
 ORDER BY Players, PlayerOrder
 ```
 <Grid cols=2>
-    <BarChart data={PlayOrder2.filter(d => d.Players == 3)}
+    <BarChart data={PlayOrder2.filter(d => d.Players == 3)} 
         title="3-Player Position Win Rate"
         x=PlayerOrder
+        sort=false 
         y="Win Rate"
         yGridlines=false
         yAxisLabels=false
@@ -248,6 +251,7 @@ ORDER BY Players, PlayerOrder
         <BarChart data={PlayOrder2.filter(d => d.Players == 4)}
         title="4-Player Position Win Rate"
         x=PlayerOrder
+        sort=false
         y="Win Rate"
         yGridlines=false
         yAxisLabels=false
@@ -270,5 +274,98 @@ ORDER BY Players, PlayerOrder
         <Column id=Wins/>
         <Column id=Games/>
         <Column id="Win Rate" fmt = "##.0%"/>
+    </DataTable>
+</Grid>
+
+<Dropdown data={Owners} 
+    name=Player 
+    value=Owner
+    multiple = true
+    selectAllByDefault=true
+/>
+
+```PlayerPlayOrder
+SELECT Owner
+      ,COALESCE(SUM(Place) FILTER(Place==1),0) AS Wins
+      ,COUNT(Place) AS Games
+      ,Wins/Games AS WinRate
+      ,PlayerOrder
+      ,pc.PlayerCount
+FROM CommanderHistory.CommanderHistory AS ch
+JOIN (SELECT Match, COUNT(PlayerOrder) AS PlayerCount FROM CommanderHistory.CommanderHistory GROUP BY Match) AS pc ON ch.Match = pc.Match
+WHERE PlayerOrder IS NOT NULL
+  AND Owner IN ${inputs.Player.value}
+  AND Meta IN ${inputs.Meta}
+GROUP BY Owner, PlayerCount, PlayerOrder
+ORDER BY Owner, PlayerCount, PlayerOrder
+```
+
+<Grid cols=2>
+    <BarChart data={PlayerPlayOrder.filter(d => d.PlayerCount == 3)}
+        title="3-Player Position Win Rate"
+        x=PlayerOrder
+        sort=false
+        series=Owner
+        seriesColors={{
+        "RedFerret":'#DC143C',
+        "Macrosage":'#00FF7F',
+        "Tank":'#FFD700',
+        "Ghstflame":'#FF69B4',
+        "Wedgetable":'#228B22',
+        "Deniedpluto":'#4B0082',
+        "crazykid":'#1E90FF',
+        }}
+        type=grouped
+        y="WinRate"
+        xAxisLabels=false
+        yGridlines=false
+        yAxisLabels=false
+        labelFmt="##%"
+        labels=true
+        >
+        <ReferenceLine y=.333 label="Expected Win Rate"/>
+        <ReferenceArea xMin=1.5 xMax=2.5 color='#878787'/>
+    </BarChart>
+        <BarChart data={PlayerPlayOrder.filter(d => d.PlayerCount == 4)}
+        title="4-Player Position Win Rate"
+        x=PlayerOrder
+        sort=false
+        series=Owner
+        seriesColors={{
+        "RedFerret":'#DC143C',
+        "Macrosage":'#00FF7F',
+        "Tank":'#FFD700',
+        "Ghstflame":'#FF69B4',
+        "Wedgetable":'#228B22',
+        "Deniedpluto":'#4B0082',
+        "crazykid":'#1E90FF',
+        }}
+        type=grouped
+        y="WinRate"
+        xAxisLabels=false
+        yGridlines=false
+        yAxisLabels=false
+        labelFmt="##%"
+        labels=true
+        >
+        <ReferenceLine y=.25 label="Expected Win Rate"/>            <ReferenceArea xMin=1.5 xMax=2.5 color='#878787'/>
+        <ReferenceArea xMin=3.5 xMax=4.5 color='#878787'/>
+    </BarChart>
+</Grid>
+
+<Grid cols = 2>
+    <DataTable data={PlayerPlayOrder.filter(d => d.PlayerCount == 3)}>
+        <Column id=Owner/>
+        <Column id=PlayerOrder/>
+        <Column id=Wins/>
+        <Column id=Games/>
+        <Column id="WinRate" fmt = "##.0%"/>
+    </DataTable>
+    <DataTable data={PlayerPlayOrder.filter(d => d.PlayerCount == 4)}>
+        <Column id=Owner/>
+        <Column id=PlayerOrder/>
+        <Column id=Wins/>
+        <Column id=Games/>
+        <Column id="WinRate" fmt = "##.0%"/>
     </DataTable>
 </Grid>
