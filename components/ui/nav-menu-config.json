@@ -7,7 +7,7 @@
     },
     {
       "label":"Espresso",
-      "order": 2,
+      "order": 1,
       "show": true,
       "title": "Espresso",
       "children": [
@@ -43,7 +43,7 @@
     },
     {
       "label":"Commander",
-      "order": 3,
+      "order": 2,
       "show": true,
       "title": "Commander",
       "children": [
@@ -79,7 +79,7 @@
     },
     {
       "label":"BoardGamePlays",
-      "order": 1,
+      "order": 5,
       "show": true,
       "title": "Board Game Plays",
       "children": [
@@ -96,6 +96,21 @@
           "show": true,
           "title": "Dice Throne",
           "href": "/BoardGamePlays/DiceThrone"
+        }
+      ]
+    },
+    {
+      "label":"BGGRecommender",
+      "order": 3,
+      "show": true,
+      "title": "Board Game Recommendations",
+      "children": [
+        {
+          "label": "User Similarity",
+          "order": 1,
+          "show": true,
+          "title": "User Similarity",
+          "href": "/BGGRecommender/UserSimilarity"
         }
       ]
     },
