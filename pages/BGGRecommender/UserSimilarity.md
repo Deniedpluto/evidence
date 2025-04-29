@@ -3,7 +3,7 @@ The first part of the recommendation engine is to find similar users. This is do
 
 ```Usernames
 SELECT DISTINCT base_user
-FROM BGGRecommender.UserSimilarity
+FROM BGGRecommender.BGGRecommender
 ```
 
 <Dropdown data={Usernames} 
@@ -13,6 +13,6 @@ FROM BGGRecommender.UserSimilarity
 
 ```BaseData
 SELECT *
-FROM BGGRecommender.UserSimilarity
+FROM BGGRecommender.BGGRecommender
 WHERE user_id = "${inputs.Username}" 
 ```
