@@ -303,53 +303,31 @@ ORDER BY Owner, PlayerCount, PlayerOrder
 <Grid cols=2>
     <BarChart data={PlayerPlayOrder.filter(d => d.PlayerCount == 3)}
         title="3-Player Position Win Rate"
-        x=PlayerOrder
+        x=Owner
         sort=false
-        series=Owner
-        seriesColors={{
-        "RedFerret":'#DC143C',
-        "Macrosage":'#00FF7F',
-        "Tank":'#FFD700',
-        "Ghstflame":'#FF69B4',
-        "Wedgetable":'#228B22',
-        "Deniedpluto":'#4B0082',
-        "crazykid":'#1E90FF',
-        }}
+        series=PlayerOrder
         type=grouped
         y="WinRate"
-        xAxisLabels=false
         yGridlines=false
         yAxisLabels=false
         labelFmt="##%"
         labels=true
         >
         <ReferenceLine y=.333 label="Expected Win Rate"/>
-        <ReferenceArea xMin=1.5 xMax=2.5 color='#878787'/>
     </BarChart>
         <BarChart data={PlayerPlayOrder.filter(d => d.PlayerCount == 4)}
         title="4-Player Position Win Rate"
-        x=PlayerOrder
+        x=Owner
         sort=false
-        series=Owner
-        seriesColors={{
-        "RedFerret":'#DC143C',
-        "Macrosage":'#00FF7F',
-        "Tank":'#FFD700',
-        "Ghstflame":'#FF69B4',
-        "Wedgetable":'#228B22',
-        "Deniedpluto":'#4B0082',
-        "crazykid":'#1E90FF',
-        }}
+        series=PlayerOrder
         type=grouped
         y="WinRate"
-        xAxisLabels=false
         yGridlines=false
         yAxisLabels=false
         labelFmt="##%"
         labels=true
         >
-        <ReferenceLine y=.25 label="Expected Win Rate"/>            <ReferenceArea xMin=1.5 xMax=2.5 color='#878787'/>
-        <ReferenceArea xMin=3.5 xMax=4.5 color='#878787'/>
+        <ReferenceLine y=.25 label="Expected Win Rate"/>            
     </BarChart>
 </Grid>
 
