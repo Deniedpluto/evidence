@@ -200,19 +200,6 @@ WHERE Place = 1
 
 Play order tracking began on match 267. All future matches *should* have play order recorded. The "Unordered" column shows the average win rate before we started tracking play order. This is slightly higher than 25% since we sometimes play with only 3 players.
 
-```PlayOrder
-SELECT CASE PlayerOrder WHEN 1 THEN '1'
-                        WHEN 2 THEN '2'
-                        WHEN 3 THEN '3'
-                        WHEN 4 THEN '4' ELSE 'Unordered' END AS PlayerOrder
-      ,SUM(CASE WHEN Place = 1 THEN 1 ELSE 0 END) AS Wins
-      ,COUNT(Match) AS Played
-      ,Wins/Played AS "Win Rate"
-FROM CommanderHistory.CommanderHistory
-GROUP BY PlayerOrder
-ORDER BY PlayerOrder
-```
-
 ```PlayOrder2
 SELECT Players
       --,WinnerName
@@ -230,6 +217,7 @@ FROM (SELECT Match,
             --,LIST(Owner) FILTER(PLACE == 1) AS WinnerName
       FROM CommanderHistory.CommanderHistory
       WHERE PlayerOrder IS NOT NULL
+        AND Meta IN ${inputs.Meta}
       GROUP BY Match
       )
 GROUP BY Winner, Players, Games--, WinnerName
@@ -342,6 +330,82 @@ ORDER BY Owner, PlayerCount, PlayerOrder
     <DataTable data={PlayerPlayOrder.filter(d => d.PlayerCount == 4)}>
         <Column id=Owner/>
         <Column id=PlayerOrder/>
+        <Column id=Wins/>
+        <Column id=Games/>
+        <Column id="WinRate" fmt = "##.0%"/>
+    </DataTable>
+</Grid>
+
+<Dropdown data={Owners} 
+    name=Player2
+    value=Owner
+    multiple = true
+    selectAllByDefault=true
+/>
+
+<ButtonGroup name=Group>
+    <ButtonGroupItem valueLabel="All" value="<= 1" default/>
+    <ButtonGroupItem valueLabel="Pre-Player Order" value="== 0"/>
+    <ButtonGroupItem valueLabel="Post-Player Order" value="== 1"/>
+</ButtonGroup>
+
+```PlayerWinRateGroup
+With Players AS (
+	SELECT Match
+    	  ,MAX(CASE WHEN PlayerOrder IS NULL THEN 0 ELSE 1 END) AS Group
+		  ,COUNT(Owner) AS Players
+	FROM CommanderHistory.CommanderHistory
+	WHERE Match > 0
+      AND Meta IN ${inputs.Meta}
+	GROUP BY Match
+)
+
+SELECT ch.Owner
+  	  ,ch.Meta
+  	  ,p.Players
+  	  ,SUM(CASE WHEN ch.Place == 1 THEN 1 ELSE 0 END) AS Wins
+  	  ,COUNT(ch.Match) AS Games
+  	  ,Wins/Games AS WinRate
+FROM CommanderHistory.CommanderHistory AS ch
+JOIN Players AS p ON ch.Match = p.Match
+WHERE p.Group ${inputs.Group}
+  AND Owner IN ${inputs.Player2.value}
+GROUP BY ch.Owner, p.Players, ch.Meta
+```
+<Grid cols=2>
+    <BarChart data={PlayerWinRateGroup.filter(d => d.Players == 3)} 
+        title="3-Player Player Win Rate"
+        x=Owner
+        y="WinRate"
+        yGridlines=false
+        yAxisLabels=false
+        labelFmt="##%"
+        labels=true
+        >
+        <ReferenceLine y=.333 label="Expected Win Rate"/>
+    </BarChart>
+        <BarChart data={PlayerWinRateGroup.filter(d => d.Players == 4)}
+        title="4-Player Player Win Rate"
+        x=Owner
+        y="WinRate"
+        yGridlines=false
+        yAxisLabels=false
+        labelFmt="##%"
+        labels=true
+        >
+        <ReferenceLine y=.25 label="Expected Win Rate"/>
+    </BarChart>
+</Grid>
+
+<Grid cols = 2>
+    <DataTable data={PlayerWinRateGroup.filter(d => d.Players == 3)}>
+        <Column id=Owner/>
+        <Column id=Wins/>
+        <Column id=Games/>
+        <Column id="WinRate" fmt = "##.0%"/>
+    </DataTable>
+    <DataTable data={PlayerWinRateGroup.filter(d => d.Players == 4)}>
+        <Column id=Owner/>
         <Column id=Wins/>
         <Column id=Games/>
         <Column id="WinRate" fmt = "##.0%"/>
