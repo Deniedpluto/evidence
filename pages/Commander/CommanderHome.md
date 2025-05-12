@@ -156,15 +156,17 @@ ORDER BY Match desc
 </DataTable>
 
 ```lastgame
-SELECT max(Match) AS LastMatch
+SELECT max(Match) AS LastMatch,
+       50 AS defaultValue
 FROM CommanderHistory.CommanderHistory
 ```
 
 <Slider
-    title="Game Range" 
+    title="Games to Display" 
     name=firstgame
     data={lastgame}
     maxColumn=LastMatch
+    defaultValue=defaultValue
     size=large
 />
 
@@ -174,8 +176,9 @@ SELECT Owner
       ,Place
 FROM CommanderHistory.CommanderHistory
 WHERE Place = 1
-    AND match >= ${inputs.firstgame}
-    AND Meta IN ${inputs.Meta}
+  AND Meta IN ${inputs.Meta}
+ORDER BY Match DESC
+LIMIT ${inputs.firstgame}
 ```
 
 <BarChart data={Winners}
@@ -200,8 +203,27 @@ WHERE Place = 1
 
 Play order tracking began on match 267. All future matches *should* have play order recorded. The "Unordered" column shows the average win rate before we started tracking play order. This is slightly higher than 25% since we sometimes play with only 3 players.
 
+<ButtonGroup name=Meta2>
+    <ButtonGroupItem valueLabel="All" value="('BMT', 'SevensOnly')"/>
+    <ButtonGroupItem valueLabel="Bigly Magic Time" value="('BMT')" default/>
+    <ButtonGroupItem valueLabel="7's Only" value="('SevensOnly')"/>
+</ButtonGroup>
+<Dropdown data={Owners2} 
+    name=Player 
+    value=Owner
+    multiple = true
+    selectAllByDefault=true
+/>
+
+```Owners2
+SELECT DISTINCT Owner FROM CommanderDecks.CommanderDecksWRA
+WHERE Meta IN ${inputs.Meta2}
+```
+
+
+
 ```PlayOrder2
-SELECT Players
+SELECT PlayerCount
       --,WinnerName
       ,CASE Winner WHEN 1 THEN '1'
                    WHEN 2 THEN '2'
@@ -212,19 +234,19 @@ SELECT Players
       ,Wins/Games AS "Win Rate"
 FROM (SELECT Match,
              SUM(CASE WHEN Place == 1 THEN PlayerOrder ELSE 0 END) AS Winner
-            ,COUNT(PlayerOrder) AS Players
-            ,COUNT(Match) OVER(PARTITION BY Players) AS Games
+            ,COUNT(PlayerOrder) AS PlayerCount
+            ,COUNT(Match) OVER(PARTITION BY PlayerCount) AS Games
             --,LIST(Owner) FILTER(PLACE == 1) AS WinnerName
       FROM CommanderHistory.CommanderHistory
       WHERE PlayerOrder IS NOT NULL
-        AND Meta IN ${inputs.Meta}
+        AND Meta IN ${inputs.Meta2}
       GROUP BY Match
       )
-GROUP BY Winner, Players, Games--, WinnerName
-ORDER BY Players, PlayerOrder
+GROUP BY Winner, PlayerCount, Games--, WinnerName
+ORDER BY PlayerCount, PlayerOrder
 ```
 <Grid cols=2>
-    <BarChart data={PlayOrder2.filter(d => d.Players == 3)} 
+    <BarChart data={PlayOrder2.filter(d => d.PlayerCount == 3)} 
         title="3-Player Position Win Rate"
         x=PlayerOrder
         sort=false 
@@ -236,7 +258,7 @@ ORDER BY Players, PlayerOrder
         >
         <ReferenceLine y=.333 label="Expected Win Rate"/>
     </BarChart>
-        <BarChart data={PlayOrder2.filter(d => d.Players == 4)}
+        <BarChart data={PlayOrder2.filter(d => d.PlayerCount == 4)}
         title="4-Player Position Win Rate"
         x=PlayerOrder
         sort=false
@@ -251,26 +273,19 @@ ORDER BY Players, PlayerOrder
 </Grid>
 
 <Grid cols = 2>
-    <DataTable data={PlayOrder2.filter(d => d.Players == 3)}>
+    <DataTable data={PlayOrder2.filter(d => d.PlayerCount == 3)}>
         <Column id=PlayerOrder/>
         <Column id=Wins/>
         <Column id=Games/>
         <Column id="Win Rate" fmt = "##.0%"/>
     </DataTable>
-    <DataTable data={PlayOrder2.filter(d => d.Players == 4)}>
+    <DataTable data={PlayOrder2.filter(d => d.PlayerCount == 4)}>
         <Column id=PlayerOrder/>
         <Column id=Wins/>
         <Column id=Games/>
         <Column id="Win Rate" fmt = "##.0%"/>
     </DataTable>
 </Grid>
-
-<Dropdown data={Owners} 
-    name=Player 
-    value=Owner
-    multiple = true
-    selectAllByDefault=true
-/>
 
 ```PlayerPlayOrder
 SELECT Owner
@@ -283,7 +298,7 @@ FROM CommanderHistory.CommanderHistory AS ch
 JOIN (SELECT Match, COUNT(PlayerOrder) AS PlayerCount FROM CommanderHistory.CommanderHistory GROUP BY Match) AS pc ON ch.Match = pc.Match
 WHERE PlayerOrder IS NOT NULL
   AND Owner IN ${inputs.Player.value}
-  AND Meta IN ${inputs.Meta}
+  AND Meta IN ${inputs.Meta2}
 GROUP BY Owner, PlayerCount, PlayerOrder
 ORDER BY Owner, PlayerCount, PlayerOrder
 ```
@@ -336,44 +351,37 @@ ORDER BY Owner, PlayerCount, PlayerOrder
     </DataTable>
 </Grid>
 
-<Dropdown data={Owners} 
-    name=Player2
-    value=Owner
-    multiple = true
-    selectAllByDefault=true
-/>
-
 <ButtonGroup name=Group>
-    <ButtonGroupItem valueLabel="All" value="<= 1" default/>
+    <ButtonGroupItem valueLabel="All" value="<= 1"/>
     <ButtonGroupItem valueLabel="Pre-Player Order" value="== 0"/>
-    <ButtonGroupItem valueLabel="Post-Player Order" value="== 1"/>
+    <ButtonGroupItem valueLabel="Post-Player Order" value="== 1" default/>
 </ButtonGroup>
 
 ```PlayerWinRateGroup
 With Players AS (
 	SELECT Match
     	  ,MAX(CASE WHEN PlayerOrder IS NULL THEN 0 ELSE 1 END) AS Group
-		  ,COUNT(Owner) AS Players
+		  ,COUNT(Owner) AS PlayerCount
 	FROM CommanderHistory.CommanderHistory
 	WHERE Match > 0
-      AND Meta IN ${inputs.Meta}
+      AND Meta IN ${inputs.Meta2}
 	GROUP BY Match
 )
 
 SELECT ch.Owner
   	  ,ch.Meta
-  	  ,p.Players
+  	  ,p.PlayerCount
   	  ,SUM(CASE WHEN ch.Place == 1 THEN 1 ELSE 0 END) AS Wins
   	  ,COUNT(ch.Match) AS Games
   	  ,Wins/Games AS WinRate
 FROM CommanderHistory.CommanderHistory AS ch
 JOIN Players AS p ON ch.Match = p.Match
 WHERE p.Group ${inputs.Group}
-  AND Owner IN ${inputs.Player2.value}
-GROUP BY ch.Owner, p.Players, ch.Meta
+  AND Owner IN ${inputs.Player.value}
+GROUP BY ch.Owner, p.PlayerCount, ch.Meta
 ```
 <Grid cols=2>
-    <BarChart data={PlayerWinRateGroup.filter(d => d.Players == 3)} 
+    <BarChart data={PlayerWinRateGroup.filter(d => d.PlayerCount == 3)} 
         title="3-Player Player Win Rate"
         x=Owner
         y="WinRate"
@@ -384,7 +392,7 @@ GROUP BY ch.Owner, p.Players, ch.Meta
         >
         <ReferenceLine y=.333 label="Expected Win Rate"/>
     </BarChart>
-        <BarChart data={PlayerWinRateGroup.filter(d => d.Players == 4)}
+        <BarChart data={PlayerWinRateGroup.filter(d => d.PlayerCount == 4)}
         title="4-Player Player Win Rate"
         x=Owner
         y="WinRate"
@@ -398,13 +406,13 @@ GROUP BY ch.Owner, p.Players, ch.Meta
 </Grid>
 
 <Grid cols = 2>
-    <DataTable data={PlayerWinRateGroup.filter(d => d.Players == 3)}>
+    <DataTable data={PlayerWinRateGroup.filter(d => d.PlayerCount == 3)}>
         <Column id=Owner/>
         <Column id=Wins/>
         <Column id=Games/>
         <Column id="WinRate" fmt = "##.0%"/>
     </DataTable>
-    <DataTable data={PlayerWinRateGroup.filter(d => d.Players == 4)}>
+    <DataTable data={PlayerWinRateGroup.filter(d => d.PlayerCount == 4)}>
         <Column id=Owner/>
         <Column id=Wins/>
         <Column id=Games/>

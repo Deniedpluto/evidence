@@ -220,19 +220,12 @@ GROUP BY "Shot Quality"
 
 ### Shot Quality by Month
 
-<ButtonGroup name=tabletype>
-    <ButtonGroupItem valueLabel="Bar Chart" value="grouped"/>
-    <ButtonGroupItem valueLabel="Stack Bar Chart" value="stacked" default/>
-    <ButtonGroupItem valueLabel="Percent Bar Chart" value="stacked100"/>
-</ButtonGroup>
-
 <BarChart data={MonthlyShots}
     seriesOrder={["Poor", "Okay", "Good", "Great"]}
     x=Month 
     y="Total Shots" 
     series="Shot Quality"
-    type=${inputs.tabletype}
-    title="Shot Quality Distribution by Month" 
+    type=grouped
     xtitle="Month" 
     ytitle="Grinds" 
     seriesColors={{
@@ -241,3 +234,33 @@ GROUP BY "Shot Quality"
         "Good":'#7CE577',
         "Great":'#09814a',
         }}/>
+<Grid rows = 2>
+   <BarChart data={MonthlyShots}
+    seriesOrder={["Poor", "Okay", "Good", "Great"]}
+    x=Month 
+    y="Total Shots" 
+    series="Shot Quality"
+    type=stacked
+    xtitle="Month" 
+    ytitle="Grinds" 
+    seriesColors={{
+        "Poor":'#8c271e',
+        "Okay":'#a3b9c9',
+        "Good":'#7CE577',
+        "Great":'#09814a',
+        }}/>
+   <BarChart data={MonthlyShots}
+    seriesOrder={["Poor", "Okay", "Good", "Great"]}
+    x=Month 
+    y="Total Shots" 
+    series="Shot Quality"
+    type=stacked100
+    xtitle="Month" 
+    ytitle="Grinds" 
+    seriesColors={{
+        "Poor":'#8c271e',
+        "Okay":'#a3b9c9',
+        "Good":'#7CE577',
+        "Great":'#09814a',
+        }}/>
+</Grid>

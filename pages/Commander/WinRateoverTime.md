@@ -14,6 +14,7 @@ WHERE Match <> 0
 
 ```slidermax
 SELECT max(MatchNumber) AS LastMatch
+      ,50 AS defaultValue
 FROM ${actualMatches}
 ```
 <ButtonGroup name=Meta>
@@ -26,6 +27,7 @@ FROM ${actualMatches}
     name=rollavg
     data={slidermax}
     maxColumn=LastMatch
+    defaultValue=defaultValue
     step=5
     size=large
 />

@@ -140,6 +140,14 @@ GROUP BY "Shot Time", "Shot Quality"
 
 This scatter plot shows the freshness of each shot over time. The color of the dots represents the quality of the shot. You can filter the shot data using the Freshness slider and the Roast dropdown. Filtering out freshness outliers can help see the freshness over time.
 
+```GrindsList
+FROM generate_series(0, 110)
+SELECT
+    generate_series AS valueList,
+    10 AS grindsDefault,
+    45 AS freshDefault
+```
+
 <Dropdown data={EspressoSummary} 
     name=Roast 
     value=Roast
@@ -151,8 +159,9 @@ This scatter plot shows the freshness of each shot over time. The color of the d
 <Slider
     title="Freshness" 
     name=freshness
-    min=0
-    max=110
+    data={GrindsList}
+    range=valueList
+    defaultValue=freshDefault
     step=5
     size=large
 />
@@ -174,11 +183,12 @@ This scatter plot shows the freshness of each shot over time. The color of the d
 
 ## Best Freshness
 
-<!-- defaultValue=10 - This is currently not working -->
 <Slider
     title="Minimum Grinds" 
     name=grinds
-    min=0
+    data={GrindsList}
+    defaultValue=grindsDefault
+    range=valueList
     max=30
 />
 
