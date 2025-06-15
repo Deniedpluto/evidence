@@ -1,0 +1,1 @@
+SELECT * FROM BGG.DIM_Games;

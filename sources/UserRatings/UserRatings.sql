@@ -1,0 +1,1 @@
+SELECT * FROM BGG.User_Ratings;
