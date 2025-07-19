@@ -23,3 +23,20 @@ WHERE base_user = '${inputs.Username.value}'
     <Column id=cosine_similarity/>
     <Column id=correlation/>
 </DataTable>
+
+```SuggestedGames
+WITH usergames AS (
+  SELECT game_id
+  FROM UserRatings.UserRatings
+  WHERE username = '${inputs.Username.value}'
+),
+
+similarusers AS (
+  SELECT comp_user
+  FROM UserSimilarity.UserSimilarity
+  WHERE base_user = '${inputs.Username.value}'
+    AND cosine_similarity > 0.5
+    AND correlation > 0.5
+)
+
+```

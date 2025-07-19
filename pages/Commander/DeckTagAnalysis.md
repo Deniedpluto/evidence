@@ -89,3 +89,35 @@ WHERE Tag IN ${inputs.Tags.value}
     <Column id="Norm Bayes STR"/>
     <Column id=Active/>
 </DataTable>
+
+### Untagged Decks
+To add tags to decks, copy the deckid below then go to the [Google Sheet](https://docs.google.com/spreadsheets/d/1SqxtkeIBL_w4j77IXBFqOFWPuRLPnvy7G_BMkYnnDAM/edit?gid=0#gid=0) and add the tags (Color, Color Identity, Playstyle, Theme, Typal, Other) to the deck.
+
+```Owners
+SELECT DISTINCT Owner FROM CommanderDecks.CommanderDecksWRA
+```
+
+<Dropdown data={Owners} 
+    name=Owner 
+    value=Owner
+    multiple = true
+    selectAllByDefault=true
+/>
+
+```UntaggedDecks
+SELECT cd.*, cdt."Tag Type", cdt.Tag
+FROM CommanderDecks.CommanderDecksWRA AS cd
+LEFT JOIN CommanderTags.CommanderTags AS cdt ON cd.ID = cdt."Deck ID"
+WHERE cdt."Deck ID" IS NULL
+  AND cd.Owner IN ${inputs.Owner.value}
+```
+
+<DataTable data={UntaggedDecks} search=true>
+    <Column id=ID/>
+    <Column id=Deck/>
+    <Column id=Owner/>
+    <Column id=Played/>
+    <Column id=Wins/>
+    <Column id="Win Rate" fmt = "##.0%"/>
+    <Column id=Active/>
+</DataTable>

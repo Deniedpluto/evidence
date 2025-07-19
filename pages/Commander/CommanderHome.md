@@ -287,6 +287,28 @@ ORDER BY PlayerCount, PlayerOrder
     </DataTable>
 </Grid>
 
+Based on all the games played with player order tracked we can run a Chi-Squared test for independence to see if player order and win rate are independent. The null hypothesis is that player order does not affect win rate. The alternative hypothesis is that player order does affect win rate. In the case where we have a high Chi-Squared statistic and a low p-value we can reject the null hypothesis and conclude that player order does affect win rate.
+
+It is important to note that this assumes that player does not affect win rate or at the very least is not a confounding variable and does not take into account things like which deck are being played. We know this is not a perfect test, however, it does give us some insight into if we should consider slight modifications to our ruleset to even out the effect of play order on the game. 
+
+```PlayerOrderStats
+SELECT *
+FROM ChiSquared.ChiSquared
+```
+
+<DataTable
+    data={PlayerOrderStats}
+    sort=PlayerCount>
+    <Column id=PlayerCount/>
+    <Column id=TotalGames/>
+    <Column id=DoF/>
+    <Column id=ChiSqStat/>
+    <Column id="MaxConfidenceLevel"/>
+    <Column id=PValue/>
+</DataTable>
+
+The the breakout below we can see the per player play order win rates. This is currently just another data point, however, I plan on making a weighted win rate that takes into account how often each player plays each position and their win rate overall to give a more accurate estimate of the expected win rate for each position.
+
 ```PlayerPlayOrder
 SELECT Owner
       ,COALESCE(SUM(Place) FILTER(Place==1),0) AS Wins
