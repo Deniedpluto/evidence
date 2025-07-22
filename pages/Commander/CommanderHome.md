@@ -20,13 +20,16 @@ I have also been building out a set/block of magic cards from my experiences pla
 
 ```Owners
 SELECT DISTINCT Owner FROM CommanderDecks.CommanderDecksWRA
-WHERE Meta IN ${inputs.Meta}
+--WHERE Meta IN ${inputs.Meta}
+WHERE Meta = 'BMT'
 ```
+<!-- Taking this out since we really only have one Meta now
 <ButtonGroup name=Meta>
     <ButtonGroupItem valueLabel="All" value="('BMT', 'SevensOnly')"/>
     <ButtonGroupItem valueLabel="Bigly Magic Time" value="('BMT')" default/>
     <ButtonGroupItem valueLabel="7's Only" value="('SevensOnly')"/>
 </ButtonGroup>
+-->
 <Dropdown data={Owners} 
     name=Owner 
     value=Owner
@@ -68,18 +71,19 @@ FROM CommanderDecks.CommanderDecksWRA
 WHERE Played > ${inputs.mingames}
   AND Owner IN ${inputs.Owner.value}
   AND Active IN (${inputs.DeckStatus})
-  AND Meta IN ${inputs.Meta};
+  --AND Meta IN ${inputs.Meta}
+  AND Meta = 'BMT';
 ```
 <DataTable data={CommanderDecks} search=true>
-    <Column id=Meta/>
     <Column id=Rank/>
     <Column id=Deck/>
     <Column id=Owner/>
     <Column id=Played/>
     <Column id=Wins/>
-    <Column id="Win Rate" fmt = "##.0%"/>
     <Column id=Elo/>
     <Column id="Win Rate Against" fmt = "##.0%"/>
+    <Column id="Win Rate" fmt = "##.0%"/>
+    <Column id=Strength fmt = "##.0%"/>
     <Column id=Weight/>
     <Column id="Bayes Strength"/>
     <Column id="Standardized Strength" fmt = "#.0"/>
@@ -108,7 +112,7 @@ GROUP BY Meta, Owner;
 ```
 
 <DataTable data={PlayerStats} search=true>
-    <Column id=Meta/>
+    <!--<Column id=Meta/>-->
     <Column id=Owner/>
     <Column id="Total Played"/>
     <Column id="Total Wins"/>
@@ -132,9 +136,11 @@ WITH recentplays AS (
   FROM CommanderHistory.CommanderHistory
   WHERE Match >= (SELECT MAX(Match) - 9 
                   FROM CommanderHistory.CommanderHistory 
-                  WHERE Meta IN ${inputs.Meta}
+                  --WHERE Meta IN ${inputs.Meta}
+                  WHERE Meta = 'BMT' -- For now we are only looking at BMT matches
                 )
-    AND Meta IN ${inputs.Meta}
+    --AND Meta IN ${inputs.Meta}
+    AND Meta = 'BMT'
 )
 
 SELECT Match
@@ -176,7 +182,8 @@ SELECT Owner
       ,Place
 FROM CommanderHistory.CommanderHistory
 WHERE Place = 1
-  AND Meta IN ${inputs.Meta}
+  --AND Meta IN ${inputs.Meta}
+  AND Meta = 'BMT'
 ORDER BY Match DESC
 LIMIT ${inputs.firstgame}
 ```
@@ -198,246 +205,3 @@ LIMIT ${inputs.firstgame}
         "Deniedpluto":'#4B0082',
         "crazykid":'#1E90FF',
         }}/>
-
-## Player Order Analysis
-
-Play order tracking began on match 267. All future matches *should* have play order recorded. The "Unordered" column shows the average win rate before we started tracking play order. This is slightly higher than 25% since we sometimes play with only 3 players.
-
-<ButtonGroup name=Meta2>
-    <ButtonGroupItem valueLabel="All" value="('BMT', 'SevensOnly')"/>
-    <ButtonGroupItem valueLabel="Bigly Magic Time" value="('BMT')" default/>
-    <ButtonGroupItem valueLabel="7's Only" value="('SevensOnly')"/>
-</ButtonGroup>
-<Dropdown data={Owners2} 
-    name=Player 
-    value=Owner
-    multiple = true
-    selectAllByDefault=true
-/>
-
-```Owners2
-SELECT DISTINCT Owner FROM CommanderDecks.CommanderDecksWRA
-WHERE Meta IN ${inputs.Meta2}
-```
-
-
-
-```PlayOrder2
-SELECT PlayerCount
-      --,WinnerName
-      ,CASE Winner WHEN 1 THEN '1'
-                   WHEN 2 THEN '2'
-                   WHEN 3 THEN '3'
-                   WHEN 4 THEN '4' ELSE 'Unordered' END AS PlayerOrder
-      ,COUNT(Match) AS Wins
-      ,Games
-      ,Wins/Games AS "Win Rate"
-FROM (SELECT Match,
-             SUM(CASE WHEN Place == 1 THEN PlayerOrder ELSE 0 END) AS Winner
-            ,COUNT(PlayerOrder) AS PlayerCount
-            ,COUNT(Match) OVER(PARTITION BY PlayerCount) AS Games
-            --,LIST(Owner) FILTER(PLACE == 1) AS WinnerName
-      FROM CommanderHistory.CommanderHistory
-      WHERE PlayerOrder IS NOT NULL
-        AND Meta IN ${inputs.Meta2}
-      GROUP BY Match
-      )
-GROUP BY Winner, PlayerCount, Games--, WinnerName
-ORDER BY PlayerCount, PlayerOrder
-```
-<Grid cols=2>
-    <BarChart data={PlayOrder2.filter(d => d.PlayerCount == 3)} 
-        title="3-Player Position Win Rate"
-        x=PlayerOrder
-        sort=false 
-        y="Win Rate"
-        yGridlines=false
-        yAxisLabels=false
-        labelFmt="##%"
-        labels=true
-        >
-        <ReferenceLine y=.333 label="Expected Win Rate"/>
-    </BarChart>
-        <BarChart data={PlayOrder2.filter(d => d.PlayerCount == 4)}
-        title="4-Player Position Win Rate"
-        x=PlayerOrder
-        sort=false
-        y="Win Rate"
-        yGridlines=false
-        yAxisLabels=false
-        labelFmt="##%"
-        labels=true
-        >
-        <ReferenceLine y=.25 label="Expected Win Rate"/>
-    </BarChart>
-</Grid>
-
-<Grid cols = 2>
-    <DataTable data={PlayOrder2.filter(d => d.PlayerCount == 3)}>
-        <Column id=PlayerOrder/>
-        <Column id=Wins/>
-        <Column id=Games/>
-        <Column id="Win Rate" fmt = "##.0%"/>
-    </DataTable>
-    <DataTable data={PlayOrder2.filter(d => d.PlayerCount == 4)}>
-        <Column id=PlayerOrder/>
-        <Column id=Wins/>
-        <Column id=Games/>
-        <Column id="Win Rate" fmt = "##.0%"/>
-    </DataTable>
-</Grid>
-
-Based on all the games played with player order tracked we can run a Chi-Squared test for independence to see if player order and win rate are independent. The null hypothesis is that player order does not affect win rate. The alternative hypothesis is that player order does affect win rate. In the case where we have a high Chi-Squared statistic and a low p-value we can reject the null hypothesis and conclude that player order does affect win rate.
-
-It is important to note that this assumes that player does not affect win rate or at the very least is not a confounding variable and does not take into account things like which deck are being played. We know this is not a perfect test, however, it does give us some insight into if we should consider slight modifications to our ruleset to even out the effect of play order on the game. 
-
-```PlayerOrderStats
-SELECT *
-FROM ChiSquared.ChiSquared
-```
-
-<DataTable
-    data={PlayerOrderStats}
-    sort=PlayerCount>
-    <Column id=PlayerCount/>
-    <Column id=TotalGames/>
-    <Column id=DoF/>
-    <Column id=ChiSqStat/>
-    <Column id="MaxConfidenceLevel"/>
-    <Column id=PValue/>
-</DataTable>
-
-The the breakout below we can see the per player play order win rates. This is currently just another data point, however, I plan on making a weighted win rate that takes into account how often each player plays each position and their win rate overall to give a more accurate estimate of the expected win rate for each position.
-
-```PlayerPlayOrder
-SELECT Owner
-      ,COALESCE(SUM(Place) FILTER(Place==1),0) AS Wins
-      ,COUNT(Place) AS Games
-      ,Wins/Games AS WinRate
-      ,PlayerOrder
-      ,pc.PlayerCount
-FROM CommanderHistory.CommanderHistory AS ch
-JOIN (SELECT Match, COUNT(PlayerOrder) AS PlayerCount FROM CommanderHistory.CommanderHistory GROUP BY Match) AS pc ON ch.Match = pc.Match
-WHERE PlayerOrder IS NOT NULL
-  AND Owner IN ${inputs.Player.value}
-  AND Meta IN ${inputs.Meta2}
-GROUP BY Owner, PlayerCount, PlayerOrder
-ORDER BY Owner, PlayerCount, PlayerOrder
-```
-
-<Grid cols=2>
-    <BarChart data={PlayerPlayOrder.filter(d => d.PlayerCount == 3)}
-        title="3-Player Position Win Rate"
-        x=Owner
-        sort=false
-        series=PlayerOrder
-        type=grouped
-        y="WinRate"
-        yGridlines=false
-        yAxisLabels=false
-        labelFmt="##%"
-        labels=true
-        >
-        <ReferenceLine y=.333 label="Expected Win Rate"/>
-    </BarChart>
-        <BarChart data={PlayerPlayOrder.filter(d => d.PlayerCount == 4)}
-        title="4-Player Position Win Rate"
-        x=Owner
-        sort=false
-        series=PlayerOrder
-        type=grouped
-        y="WinRate"
-        yGridlines=false
-        yAxisLabels=false
-        labelFmt="##%"
-        labels=true
-        >
-        <ReferenceLine y=.25 label="Expected Win Rate"/>            
-    </BarChart>
-</Grid>
-
-<Grid cols = 2>
-    <DataTable data={PlayerPlayOrder.filter(d => d.PlayerCount == 3)}>
-        <Column id=Owner/>
-        <Column id=PlayerOrder/>
-        <Column id=Wins/>
-        <Column id=Games/>
-        <Column id="WinRate" fmt = "##.0%"/>
-    </DataTable>
-    <DataTable data={PlayerPlayOrder.filter(d => d.PlayerCount == 4)}>
-        <Column id=Owner/>
-        <Column id=PlayerOrder/>
-        <Column id=Wins/>
-        <Column id=Games/>
-        <Column id="WinRate" fmt = "##.0%"/>
-    </DataTable>
-</Grid>
-
-<ButtonGroup name=Group>
-    <ButtonGroupItem valueLabel="All" value="<= 1"/>
-    <ButtonGroupItem valueLabel="Pre-Player Order" value="== 0"/>
-    <ButtonGroupItem valueLabel="Post-Player Order" value="== 1" default/>
-</ButtonGroup>
-
-```PlayerWinRateGroup
-With Players AS (
-	SELECT Match
-    	  ,MAX(CASE WHEN PlayerOrder IS NULL THEN 0 ELSE 1 END) AS Group
-		  ,COUNT(Owner) AS PlayerCount
-	FROM CommanderHistory.CommanderHistory
-	WHERE Match > 0
-      AND Meta IN ${inputs.Meta2}
-	GROUP BY Match
-)
-
-SELECT ch.Owner
-  	  ,ch.Meta
-  	  ,p.PlayerCount
-  	  ,SUM(CASE WHEN ch.Place == 1 THEN 1 ELSE 0 END) AS Wins
-  	  ,COUNT(ch.Match) AS Games
-  	  ,Wins/Games AS WinRate
-FROM CommanderHistory.CommanderHistory AS ch
-JOIN Players AS p ON ch.Match = p.Match
-WHERE p.Group ${inputs.Group}
-  AND Owner IN ${inputs.Player.value}
-GROUP BY ch.Owner, p.PlayerCount, ch.Meta
-```
-<Grid cols=2>
-    <BarChart data={PlayerWinRateGroup.filter(d => d.PlayerCount == 3)} 
-        title="3-Player Player Win Rate"
-        x=Owner
-        y="WinRate"
-        yGridlines=false
-        yAxisLabels=false
-        labelFmt="##%"
-        labels=true
-        >
-        <ReferenceLine y=.333 label="Expected Win Rate"/>
-    </BarChart>
-        <BarChart data={PlayerWinRateGroup.filter(d => d.PlayerCount == 4)}
-        title="4-Player Player Win Rate"
-        x=Owner
-        y="WinRate"
-        yGridlines=false
-        yAxisLabels=false
-        labelFmt="##%"
-        labels=true
-        >
-        <ReferenceLine y=.25 label="Expected Win Rate"/>
-    </BarChart>
-</Grid>
-
-<Grid cols = 2>
-    <DataTable data={PlayerWinRateGroup.filter(d => d.PlayerCount == 3)}>
-        <Column id=Owner/>
-        <Column id=Wins/>
-        <Column id=Games/>
-        <Column id="WinRate" fmt = "##.0%"/>
-    </DataTable>
-    <DataTable data={PlayerWinRateGroup.filter(d => d.PlayerCount == 4)}>
-        <Column id=Owner/>
-        <Column id=Wins/>
-        <Column id=Games/>
-        <Column id="WinRate" fmt = "##.0%"/>
-    </DataTable>
-</Grid>

@@ -17,11 +17,13 @@ SELECT max(MatchNumber) AS LastMatch
       ,50 AS defaultValue
 FROM ${actualMatches}
 ```
+<!--
 <ButtonGroup name=Meta>
     <ButtonGroupItem valueLabel="All" value="('BMT', 'SevensOnly')" default/>
     <ButtonGroupItem valueLabel="Bigly Magic Time" value="('BMT')"/>
     <ButtonGroupItem valueLabel="7's Only" value="('SevensOnly')"/>
 </ButtonGroup>
+-->
 <Slider
     title="Rolling Average" 
     name=rollavg
@@ -38,7 +40,8 @@ FROM ${actualMatches}
 WITH lastmatches AS (
 SELECT Meta, MAX(MatchNumber) AS LastMatch
 FROM ${actualMatches}
-WHERE Meta IN ${inputs.Meta}
+--WHERE Meta IN ${inputs.Meta}
+WHERE Meta = 'BMT'
 GROUP BY Meta
 ),
 
@@ -100,7 +103,8 @@ SELECT
     ,"Rolling Wins" / "Rolling Games" AS "Win Rate"
 FROM ${actualMatches}
 WHERE Match <> 0
-  AND Meta IN ${inputs.Meta};
+  --AND Meta IN ${inputs.Meta};
+    AND Meta = 'BMT';
 ```
 
 <LineChart 
@@ -203,7 +207,8 @@ WHERE Match <> 0
     OR Deck IN ${inputs.Tanks.value}
     OR Deck IN ${inputs.RedFerret.value}
     OR Deck IN ${inputs.Macrosage.value})
-    AND Meta IN ${inputs.Meta};
+    --AND Meta IN ${inputs.Meta};
+    AND Meta = 'BMT';
 ```
 
 <LineChart 

@@ -54,23 +54,30 @@
           "title": "Home",
           "href": "/Commander/CommanderHome"
         },
+              {
+          "label": "PlayerOrderAnalysis",
+          "order": 2,
+          "show": true,
+          "title": "Player Order Analysis",
+          "href": "/Commander/PlayerOrderAnalysis"
+        },
         {
           "label": "WinRateoverTime",
-          "order": 2,
+          "order": 3,
           "show": true,
           "title": "Win Rate Over Time",
           "href": "/Commander/WinRateoverTime"
         },        
         {
           "label": "DeckTagAnalysis",
-          "order": 3,
+          "order": 4,
           "show": true,
           "title": "Tag Analysis",
           "href": "/Commander/DeckTagAnalysis"
         },
         {
           "label": "RankingProcess",
-          "order": 4,
+          "order": 5,
           "show": true,
           "title": "Ranking Process",
           "href": "/Commander/RankingProcess"

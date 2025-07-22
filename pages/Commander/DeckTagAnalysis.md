@@ -43,11 +43,13 @@ WHERE Tag IN ${inputs.Tags.value}
   AND Active IN (${inputs.DeckStatus})
   AND Meta IN ${inputs.Meta}
 ```
+<!--
 <ButtonGroup name=Meta>
     <ButtonGroupItem valueLabel="All" value="('BMT', 'SevensOnly')" default/>
     <ButtonGroupItem valueLabel="Bigly Magic Time" value="('BMT')"/>
     <ButtonGroupItem valueLabel="7's Only" value="('SevensOnly')"/>
 </ButtonGroup>
+-->
 <ButtonGroup name=DeckStatus>
     <ButtonGroupItem valueLabel="All" value="0,1" default/>
     <ButtonGroupItem valueLabel="Active" value="1" />
@@ -95,6 +97,7 @@ To add tags to decks, copy the deckid below then go to the [Google Sheet](https:
 
 ```Owners
 SELECT DISTINCT Owner FROM CommanderDecks.CommanderDecksWRA
+WHERE Meta = 'BMT'
 ```
 
 <Dropdown data={Owners} 
@@ -110,6 +113,7 @@ FROM CommanderDecks.CommanderDecksWRA AS cd
 LEFT JOIN CommanderTags.CommanderTags AS cdt ON cd.ID = cdt."Deck ID"
 WHERE cdt."Deck ID" IS NULL
   AND cd.Owner IN ${inputs.Owner.value}
+  AND cd.Meta = 'BMT'
 ```
 
 <DataTable data={UntaggedDecks} search=true>

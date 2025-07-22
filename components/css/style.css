@@ -9,3 +9,8 @@
   .close-sidenav header {
     width: 100%;
   }
+
+/* Style for the navigation menu */
+  .nested-list {
+      padding-left: 2em;
+  }

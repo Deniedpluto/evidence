@@ -56,6 +56,13 @@
 
     }
 
+    // Added this section in to handle the collapsing of the side nav menu.
+    let openParent = null; // Track which parent is open
+
+    function toggleParent(idx) {
+        openParent = openParent === idx ? null : idx;
+    }
+
 </script>
 
 {#if pages && pages.length > 0}
@@ -71,6 +78,43 @@
         </button>
         
       </div>
+
+    <!-- This is the section that handles the collapsing of the side nav menu. -->
+    <ul>
+        {#each pages as item, idx}
+            {#if item.children.length === 0}
+                <li class="hover:bg-gray-700 p-3">
+                    <a href="{item.href}/" on:click={handleNavigation}>
+                        {capitalizeFirstLetter(item.label)}
+                    </a>
+                </li>
+            {/if}
+            {#if item.children.length > 0}
+                <li>
+                    <button
+                        class="w-full text-left p-3 hover:bg-gray-700 flex items-center"
+                        on:click={() => toggleParent(idx)}
+                    >
+                        {capitalizeFirstLetter(item.title)}
+                        <span class="ml-auto">{openParent === idx ? '▲' : '▼'}</span>
+                    </button>
+                    {#if openParent === idx}
+                        <ul class="nested-list">
+                            {#each item.children as child}
+                                <li class="hover:bg-gray-700 p-3">
+                                    <a href="{child.href}/" on:click={handleNavigation}>
+                                        {capitalizeFirstLetter(child.title)}
+                                    </a>
+                                </li>
+                            {/each}
+                        </ul>
+                    {/if}
+                </li>
+            {/if}
+        {/each}
+    </ul>
+
+      <!-- This was replaced with the above section for collapsing the side nav menu.
       <ul>
         {#each pages as item}
               {#if item.children.length === 0}
@@ -90,6 +134,7 @@
               {/if}
           {/each}
       </ul>
+    -->
     </div>
   
     
