@@ -3,7 +3,7 @@
 Play order tracking began on match 267. All future matches *should* have play order recorded. The "Unordered" column shows the average win rate before we started tracking play order. This is slightly higher than 25% since we sometimes play with only 3 players.
 
 <!--
-<ButtonGroup name=Meta2>
+<ButtonGroup name=Meta>
     <ButtonGroupItem valueLabel="All" value="('BMT', 'SevensOnly')"/>
     <ButtonGroupItem valueLabel="Bigly Magic Time" value="('BMT')" default/>
     <ButtonGroupItem valueLabel="7's Only" value="('SevensOnly')"/>
@@ -18,7 +18,7 @@ Play order tracking began on match 267. All future matches *should* have play or
 
 ```Owners2
 SELECT DISTINCT Owner FROM CommanderDecks.CommanderDecksWRA
---WHERE Meta IN ${inputs.Meta2}
+--Meta Reference
 WHERE Meta = 'BMT'
 ```
 
@@ -41,7 +41,7 @@ FROM (SELECT Match,
             --,LIST(Owner) FILTER(PLACE == 1) AS WinnerName
       FROM CommanderHistory.CommanderHistory
       WHERE PlayerOrder IS NOT NULL
-        --AND Meta IN ${inputs.Meta2}
+        --Meta Reference
         AND Meta = 'BMT'
       GROUP BY Match
       )
@@ -123,7 +123,7 @@ FROM CommanderHistory.CommanderHistory AS ch
 JOIN (SELECT Match, COUNT(PlayerOrder) AS PlayerCount FROM CommanderHistory.CommanderHistory GROUP BY Match) AS pc ON ch.Match = pc.Match
 WHERE PlayerOrder IS NOT NULL
   AND Owner IN ${inputs.Player.value}
-  --AND Meta IN ${inputs.Meta2}
+  --Meta Reference
   AND Meta = 'BMT'
 GROUP BY Owner, PlayerCount, PlayerOrder
 ORDER BY Owner, PlayerCount, PlayerOrder
@@ -190,7 +190,7 @@ With Players AS (
 		  ,COUNT(Owner) AS PlayerCount
 	FROM CommanderHistory.CommanderHistory
 	WHERE Match > 0
-      --AND Meta IN ${inputs.Meta2}
+      --Meta Reference
 	  AND Meta = 'BMT'
     GROUP BY Match
 )

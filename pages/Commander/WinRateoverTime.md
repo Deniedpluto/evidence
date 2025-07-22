@@ -40,7 +40,7 @@ FROM ${actualMatches}
 WITH lastmatches AS (
 SELECT Meta, MAX(MatchNumber) AS LastMatch
 FROM ${actualMatches}
---WHERE Meta IN ${inputs.Meta}
+--Meta Reference
 WHERE Meta = 'BMT'
 GROUP BY Meta
 ),
@@ -103,7 +103,7 @@ SELECT
     ,"Rolling Wins" / "Rolling Games" AS "Win Rate"
 FROM ${actualMatches}
 WHERE Match <> 0
-  --AND Meta IN ${inputs.Meta};
+  --Meta Reference;
     AND Meta = 'BMT';
 ```
 
@@ -207,7 +207,7 @@ WHERE Match <> 0
     OR Deck IN ${inputs.Tanks.value}
     OR Deck IN ${inputs.RedFerret.value}
     OR Deck IN ${inputs.Macrosage.value})
-    --AND Meta IN ${inputs.Meta};
+    --Meta Reference;
     AND Meta = 'BMT';
 ```
 

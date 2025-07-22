@@ -3,6 +3,12 @@ title: Commander Meta Analysis
 sidebar_position: 1
 ---
 
+<!--
+    Dev Note: I have removed the "Meta" button group since we are only using one meta now. If we add more metas in the future, we can reintroduce it.
+    The code to reference the meta is WHERE/AND Meta IN ${inputs.Meta}. Commenting out the code broke the page so I have removed the references and replaced them with a line "--Meta Reference".
+    The issue is with the refernece to the variable specifically {inputs.Meta}. 
+-->
+
 ## Welcome to My Commander Meta Analysis!
 Since early 2023 I've tracked the commander games that with my group of friends. We orignally started playing using the Guildpact app and still do and wanted a better interface for seeing more and deeper information about the games we've played. I've also created a new ranking system that takes into account the win rate of the deck and the win rate of the decks it has faced. I believe this gives a more accurate representation of the strength of the deck over using my adapted Elo calculation for multiplayer games.
 
@@ -20,8 +26,8 @@ I have also been building out a set/block of magic cards from my experiences pla
 
 ```Owners
 SELECT DISTINCT Owner FROM CommanderDecks.CommanderDecksWRA
---WHERE Meta IN ${inputs.Meta}
-WHERE Meta = 'BMT'
+WHERE Meta = 'BMT';
+--Meta Reference
 ```
 <!-- Taking this out since we really only have one Meta now
 <ButtonGroup name=Meta>
@@ -71,7 +77,7 @@ FROM CommanderDecks.CommanderDecksWRA
 WHERE Played > ${inputs.mingames}
   AND Owner IN ${inputs.Owner.value}
   AND Active IN (${inputs.DeckStatus})
-  --AND Meta IN ${inputs.Meta}
+  --Meta Reference
   AND Meta = 'BMT';
 ```
 <DataTable data={CommanderDecks} search=true>
@@ -107,7 +113,7 @@ FROM CommanderDecks.CommanderDecksWRA
 WHERE Played > ${inputs.mingames}
   AND Owner IN ${inputs.Owner.value}
   AND Active IN (${inputs.DeckStatus})
-  AND Meta IN ${inputs.Meta}
+  --Meta Reference
 GROUP BY Meta, Owner;
 ```
 
@@ -136,10 +142,10 @@ WITH recentplays AS (
   FROM CommanderHistory.CommanderHistory
   WHERE Match >= (SELECT MAX(Match) - 9 
                   FROM CommanderHistory.CommanderHistory 
-                  --WHERE Meta IN ${inputs.Meta}
+                  --Meta Reference
                   WHERE Meta = 'BMT' -- For now we are only looking at BMT matches
                 )
-    --AND Meta IN ${inputs.Meta}
+    --Meta Reference
     AND Meta = 'BMT'
 )
 
@@ -182,7 +188,7 @@ SELECT Owner
       ,Place
 FROM CommanderHistory.CommanderHistory
 WHERE Place = 1
-  --AND Meta IN ${inputs.Meta}
+  --Meta Reference
   AND Meta = 'BMT'
 ORDER BY Match DESC
 LIMIT ${inputs.firstgame}
