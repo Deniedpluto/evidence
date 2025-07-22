@@ -72,6 +72,8 @@ SELECT Meta
     ,Weight
     ,"Bayes STR" AS "Bayes Strength"
     ,"Norm Bayes STR" AS "Standardized Strength"
+    ,ExpectedElo AS "Expected Elo"
+    ,-EloDiff AS "Elo Difference"
     ,Active
 FROM CommanderDecks.CommanderDecksWRA
 WHERE Played > ${inputs.mingames}
@@ -87,6 +89,8 @@ WHERE Played > ${inputs.mingames}
     <Column id=Played/>
     <Column id=Wins/>
     <Column id=Elo/>
+    <Column id="Expected Elo"/>
+    <Column id="Elo Difference" contentType=bar fmt="#"/>
     <Column id="Win Rate Against" fmt = "##.0%"/>
     <Column id="Win Rate" fmt = "##.0%"/>
     <Column id=Strength fmt = "##.0%"/>
@@ -211,3 +215,33 @@ LIMIT ${inputs.firstgame}
         "Deniedpluto":'#4B0082',
         "crazykid":'#1E90FF',
         }}/>
+
+<BubbleChart  data={CommanderDecks}
+    title="Win Rate vs Elo"
+    x=Elo
+    y="Standardized Strength"
+    xAxisLabel="Elo"
+    yAxisLabel="Standardized Strength"
+    size="Played"
+    label="Deck"
+    xBaseline=false
+    yGridlines=false
+    series=Owner
+    tooltipTitle="Deck"
+    seriesColors={{
+        "RedFerret":'#DC143C',
+        "Macrosage":'#00FF7F',
+        "Tank":'#FFD700',
+        "Ghstflame":'#FF69B4',
+        "Wedgetable":'#228B22',
+        "Deniedpluto":'#4B0082',
+        "crazykid":'#1E90FF',
+        }}>
+    <ReferenceLine
+        x=1000
+    />
+    <ReferenceLine  
+        y=0
+    />
+</BubbleChart>
+

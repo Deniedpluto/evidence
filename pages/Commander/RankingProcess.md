@@ -35,7 +35,7 @@ To pull this all together I multiply the win rate of the deck by the win rate of
 - BSTR = Bayes Strength
 
 ### The Formulas
-- STR = WR \* WRA
+- STR = (WR + sqrt(WRA))/2
 - W = P / (A(P) + P)
 - BSTR = (STR \* W) + (A(STR) \* (1 - W))
 
