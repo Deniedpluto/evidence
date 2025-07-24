@@ -100,6 +100,35 @@ WHERE Played > ${inputs.mingames}
     <Column id=Active/>
 </DataTable>
 
+<BubbleChart  data={CommanderDecks}
+    title="Expected Elo vs Elo"
+    x=Elo
+    y="Expected Elo"
+    xAxisLabel="Elo"
+    yAxisLabel="Expected Elo"
+    size="Played"
+    label="Deck"
+    xBaseline=false
+    yGridlines=false
+    series=Owner
+    tooltipTitle="Deck"
+    seriesColors={{
+        "RedFerret":'#DC143C',
+        "Macrosage":'#00FF7F',
+        "Tank":'#FFD700',
+        "Ghstflame":'#FF69B4',
+        "Wedgetable":'#228B22',
+        "Deniedpluto":'#4B0082',
+        "crazykid":'#1E90FF',
+        }}>
+    <ReferenceLine
+        x=1000
+    />
+    <ReferenceLine  
+        y=1000
+    />
+</BubbleChart>
+
 ## Player Stats
 Overall Player stats including average Elo, WRA, Bayes STR. For a more granular analysis see [Win Rates Over Time](../WinRateoverTime)
 
@@ -216,32 +245,5 @@ LIMIT ${inputs.firstgame}
         "crazykid":'#1E90FF',
         }}/>
 
-<BubbleChart  data={CommanderDecks}
-    title="Win Rate vs Elo"
-    x=Elo
-    y="Standardized Strength"
-    xAxisLabel="Elo"
-    yAxisLabel="Standardized Strength"
-    size="Played"
-    label="Deck"
-    xBaseline=false
-    yGridlines=false
-    series=Owner
-    tooltipTitle="Deck"
-    seriesColors={{
-        "RedFerret":'#DC143C',
-        "Macrosage":'#00FF7F',
-        "Tank":'#FFD700',
-        "Ghstflame":'#FF69B4',
-        "Wedgetable":'#228B22',
-        "Deniedpluto":'#4B0082',
-        "crazykid":'#1E90FF',
-        }}>
-    <ReferenceLine
-        x=1000
-    />
-    <ReferenceLine  
-        y=0
-    />
-</BubbleChart>
+
 
