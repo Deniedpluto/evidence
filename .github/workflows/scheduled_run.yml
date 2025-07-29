@@ -1,0 +1,27 @@
+name: 'Scheduled Run'
+
+on:
+  schedule:
+    - cron: '0 1 * * *'  # This line sets the job to run every day at 1am UTC/5pm PT
+
+jobs:
+  deploy:
+    name: 'Deploy'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@master
+
+    # install duckdb binary
+      - name: Install DuckDB
+        run: |
+          wget https://github.com/duckdb/duckdb/releases/download/v1.1.3/duckdb_cli-linux-amd64.zip
+          unzip duckdb_cli-linux-amd64
+          rm duckdb_cli-linux-amd64.zip
+
+    # run sql script with a specific token
+      - name: Run SQL script
+        env:
+          MOTHERDUCK_TOKEN: ${{ secrets.MOTHERDUCK_TOKEN }}
+        run: ./duckdb < script.sql
