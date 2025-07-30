@@ -232,3 +232,25 @@ ORDER BY A.Freshness;
         "Good":'#7CE577',
         "Great":'#09814a',
         }}/>
+
+```sql RecentRoasts
+SELECT
+    "Shot Date"
+    ,Roast
+    ,"Roast Date"
+    ,"Grind Setting"
+    ,"Shot Time"
+    ,"Shot Quality"
+FROM EspressoData.EspressoData
+WHERE Roast <> 'Event'
+ORDER BY "Shot Date" DESC
+```
+
+<DataTable data={RecentRoasts}>
+    <Column id="Shot Date"/>
+    <Column id="Roast Date"/>
+    <Column id=Roast/>
+    <Column id="Grind Setting"/>
+    <Column id="Shot Time" fmt="#.0"/>
+    <Column id="Shot Quality"/>
+</DataTable>
