@@ -133,8 +133,8 @@ WHERE Played > ${inputs.mingames}
 Overall Player stats including average Elo, WRA, Bayes STR. For a more granular analysis see [Win Rates Over Time](../WinRateoverTime)
 
 ```PlayerStats
-SELECT Meta
-      ,Owner
+SELECT --Meta
+       Owner
       ,SUM(Played) AS "Total Played"
       ,SUM(Wins) AS "Total Wins"
       ,SUM(Wins)/SUM(Played) AS "Win Rate"
@@ -146,8 +146,9 @@ FROM CommanderDecks.CommanderDecksWRA
 WHERE Played > ${inputs.mingames}
   AND Owner IN ${inputs.Owner.value}
   AND Active IN (${inputs.DeckStatus})
+  AND Meta = 'BMT'
   --Meta Reference
-GROUP BY Meta, Owner;
+GROUP BY Owner --, Meta;
 ```
 
 <DataTable data={PlayerStats} search=true>

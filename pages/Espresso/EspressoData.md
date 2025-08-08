@@ -233,6 +233,8 @@ ORDER BY A.Freshness;
         "Great":'#09814a',
         }}/>
 
+## Recent Shots
+
 ```sql RecentRoasts
 SELECT
     "Shot Date"
