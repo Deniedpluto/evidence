@@ -5,6 +5,19 @@ sidebar_position: 2
 
 The following table shows the rolling win rate of each player over the last games. This is a good way to see how a player is doing recently and gives a clearer picture of the current balance within the meta. Users can change the number of rolling games calculated by adjusting the slider below. 
 
+```Owners
+SELECT DISTINCT Owner FROM CommanderDecks.CommanderDecksWRA
+WHERE Meta = 'BMT';
+--Meta Reference
+```
+
+<Dropdown data={Owners} 
+    name=Owner 
+    value=Owner
+    multiple = true
+    defaultValue={['Deniedpluto','Wedgetable','Ghstflame','Tank']}
+/>
+
 ```actualMatches
 SELECT *,
        DENSE_RANK() OVER(PARTITION BY Meta ORDER BY Match) AS MatchNumber
@@ -42,6 +55,7 @@ SELECT Meta, MAX(MatchNumber) AS LastMatch
 FROM ${actualMatches}
 --Meta Reference
 WHERE Meta = 'BMT'
+AND Owner IN ${inputs.Owner.value}
 GROUP BY Meta
 ),
 
@@ -54,6 +68,8 @@ allgames AS (
     ,"Total Wins" / "Total Games" AS "Overall Win Rate"
 FROM CommanderHistory.CommanderHistory
 WHERE Match <> 0
+    AND Owner IN ${inputs.Owner.value}
+    AND Meta = 'BMT'
 GROUP BY Meta, Owner
 )
 
@@ -69,6 +85,8 @@ FROM ${actualMatches} AS CH
 JOIN lastmatches ON CH.Meta = lastmatches.Meta
 LEFT JOIN allgames AS AG ON CH.Owner = AG.Owner AND CH.Meta = AG.Meta
 WHERE Match <> 0
+  AND CH.Owner IN ${inputs.Owner.value}
+  AND CH.Meta = 'BMT'
   AND MatchNumber - lastmatches.LastMatch >= -${inputs.rollavg}
 GROUP BY CH.Owner, AG."Total Wins", AG."Total Games", AG."Overall Win Rate";
 ```
@@ -103,6 +121,7 @@ SELECT
     ,"Rolling Wins" / "Rolling Games" AS "Win Rate"
 FROM ${actualMatches}
 WHERE Match <> 0
+    AND Owner IN ${inputs.Owner.value}
   --Meta Reference;
     AND Meta = 'BMT';
 ```
@@ -137,14 +156,6 @@ WHERE Owner = 'Ghstflame'
 SELECT DISTINCT Deck FROM CommanderDecks.CommanderDecksWRA
 WHERE Owner = 'Tank'
 ```
-```RedFerretDecks
-SELECT DISTINCT Deck FROM CommanderDecks.CommanderDecksWRA
-WHERE Owner = 'RedFerret'
-```
-```MacrosageDecks
-SELECT DISTINCT Deck FROM CommanderDecks.CommanderDecksWRA
-WHERE Owner = 'Macrosage'
-```
 
 
 <Dropdown data={DeniedplutoDecks} 
@@ -171,18 +182,7 @@ WHERE Owner = 'Macrosage'
     multiple = true
     selectAllByDefault=true
 />
-<Dropdown data={RedFerretDecks} 
-    name=RedFerret
-    value=Deck
-    multiple = true
-    selectAllByDefault=true
-/>
-<Dropdown data={MacrosageDecks} 
-    name=Macrosage
-    value=Deck
-    multiple = true
-    selectAllByDefault=true
-/>
+
 
 ```RollingAverageGraphDeck
 SELECT
@@ -204,9 +204,7 @@ WHERE Match <> 0
   AND (Deck IN ${inputs.Deniedplutos.value}
     OR Deck IN ${inputs.Wedgetables.value}
     OR Deck IN ${inputs.Ghstflames.value}
-    OR Deck IN ${inputs.Tanks.value}
-    OR Deck IN ${inputs.RedFerret.value}
-    OR Deck IN ${inputs.Macrosage.value})
+    OR Deck IN ${inputs.Tanks.value})
     --Meta Reference;
     AND Meta = 'BMT';
 ```
