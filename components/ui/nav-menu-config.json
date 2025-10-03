@@ -107,21 +107,6 @@
       ]
     },
     {
-      "label":"BGGRecommender",
-      "order": 3,
-      "show": true,
-      "title": "Board Game Recommendations",
-      "children": [
-        {
-          "label": "User Similarity",
-          "order": 1,
-          "show": true,
-          "title": "User Similarity",
-          "href": "/BGGRecommender/UserSimilarity"
-        }
-      ]
-    },
-    {
       "label":"BGGDashboard",
       "order": 4,
       "show": true,

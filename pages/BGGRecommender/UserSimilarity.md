@@ -1,3 +1,6 @@
+# UNDER CONSTRUCTION
+I have remvoed this section while I decide what I want to do with it. The data volumes were slowing down the page loading and weren't being used.
+
 # User Similarity
 The first part of the recommendation engine is to find similar users. This is done using cosine similarity and pearson's correlation.
 
