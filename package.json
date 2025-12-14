@@ -11,7 +11,7 @@
   },
   "engines": {
     "npm": ">=7.0.0",
-    "node": ">=18.0.0"
+    "node": "22.x"
   },
   "type": "module",
   "dependencies": {
@@ -20,7 +20,7 @@
     "@evidence-dev/csv": "^1.0.14",
     "@evidence-dev/databricks": "^1.0.8",
     "@evidence-dev/duckdb": "^1.0.13",
-    "@evidence-dev/evidence": "^40.0.7",
+    "@evidence-dev/evidence": "^40.1.6",
     "@evidence-dev/motherduck": "^1.0.4",
     "@evidence-dev/mssql": "^1.1.2",
     "@evidence-dev/mysql": "^1.1.4",
@@ -33,6 +33,10 @@
     "jsonwebtoken": "9.0.0",
     "trim@<0.0.3": ">0.0.3",
     "sqlite3": "5.1.5",
-    "axios": "^1.7.4"
+    "axios": "^1.7.4",
+    "duckdb": "1.4.2"
+  },
+  "devDependencies": {
+    "vite": "^5.4.14"
   }
 }
