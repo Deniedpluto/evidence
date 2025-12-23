@@ -40,7 +40,7 @@ WHERE Meta = 'BMT';
     name=Owner 
     value=Owner
     multiple = true
-    selectAllByDefault=true
+    defaultValue={['Deniedpluto','Wedgetable','Ghstflame','Tank']}
 />
 <ButtonGroup name=DeckStatus>
     <ButtonGroupItem valueLabel="All" value="0,1"/>
@@ -72,8 +72,8 @@ SELECT Meta
     ,Weight
     ,"Bayes STR" AS "Bayes Strength"
     ,"Norm Bayes STR" AS "Standardized Strength"
-    ,ExpectedElo AS "Expected Elo"
-    ,-EloDiff AS "Elo Difference"
+    ,NaiveElo AS "Naive Elo"
+    ,-EloDiff3 AS "Elo Difference"
     ,Active
 FROM CommanderDecks.CommanderDecksWRA
 WHERE Played > ${inputs.mingames}
