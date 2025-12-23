@@ -89,7 +89,7 @@ WHERE Played > ${inputs.mingames}
     <Column id=Played/>
     <Column id=Wins/>
     <Column id=Elo/>
-    <Column id="Expected Elo"/>
+    <Column id="Naive Elo"/>
     <Column id="Elo Difference" contentType=bar fmt="#"/>
     <Column id="Win Rate Against" fmt = "##.0%"/>
     <Column id="Win Rate" fmt = "##.0%"/>
@@ -101,11 +101,11 @@ WHERE Played > ${inputs.mingames}
 </DataTable>
 
 <BubbleChart  data={CommanderDecks}
-    title="Expected Elo vs Elo"
+    title="Naive Elo vs Elo"
     x=Elo
-    y="Expected Elo"
+    y="Naive Elo"
     xAxisLabel="Elo"
-    yAxisLabel="Expected Elo"
+    yAxisLabel="Naive Elo"
     size="Played"
     label="Deck"
     xBaseline=false
