@@ -65,7 +65,7 @@ SELECT Meta
     ,Owner
     ,Wins
     ,Played
-    ,"Win Rate"
+    ,WinRate AS "Win Rate"
     ,Elo
     ,WRA AS "Win Rate Against"
     ,STR AS Strength
