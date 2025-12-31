@@ -67,17 +67,24 @@
           "show": true,
           "title": "Win Rate Over Time",
           "href": "/Commander/WinRateoverTime"
+        },
+        {
+          "label": "MatchcDetails",
+          "order": 4,
+          "show": true,
+          "title": "Match Details",
+          "href": "/Commander/MatchDetails"
         },        
         {
           "label": "DeckTagAnalysis",
-          "order": 4,
+          "order": 5,
           "show": true,
           "title": "Tag Analysis",
           "href": "/Commander/DeckTagAnalysis"
         },
         {
           "label": "RankingProcess",
-          "order": 5,
+          "order": 6,
           "show": true,
           "title": "Ranking Process",
           "href": "/Commander/RankingProcess"
