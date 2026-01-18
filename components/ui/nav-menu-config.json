@@ -51,40 +51,47 @@
           "label": "CommanderHome",
           "order": 1,
           "show": true,
-          "title": "Home",
+          "title": "Commander Meta Analysis",
           "href": "/Commander/CommanderHome"
         },
-              {
-          "label": "PlayerOrderAnalysis",
+        {
+          "label": "2026Stats",
           "order": 2,
+          "show": true,
+          "title": "2026 Stats",
+          "href": "/Commander/2026Stats"
+        },
+        {
+          "label": "PlayerOrderAnalysis",
+          "order": 3,
           "show": true,
           "title": "Player Order Analysis",
           "href": "/Commander/PlayerOrderAnalysis"
         },
         {
           "label": "WinRateoverTime",
-          "order": 3,
+          "order": 4,
           "show": true,
           "title": "Win Rate Over Time",
           "href": "/Commander/WinRateoverTime"
         },
         {
           "label": "MatchcDetails",
-          "order": 4,
+          "order": 5,
           "show": true,
           "title": "Match Details",
           "href": "/Commander/MatchDetails"
         },        
         {
           "label": "DeckTagAnalysis",
-          "order": 5,
+          "order": 6,
           "show": true,
           "title": "Tag Analysis",
           "href": "/Commander/DeckTagAnalysis"
         },
         {
           "label": "RankingProcess",
-          "order": 6,
+          "order": 7,
           "show": true,
           "title": "Ranking Process",
           "href": "/Commander/RankingProcess"

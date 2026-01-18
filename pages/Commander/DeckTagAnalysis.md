@@ -25,7 +25,7 @@ SELECT Tag
       ,SUM(Wins) AS "Total Wins"
       ,SUM(Wins)/SUM(Played) AS "Win Rate"
 FROM CommanderDecks.CommanderDecksWRA AS cd
-JOIN CommanderTags.CommanderTags AS cdt ON cd.ID = cdt."Deck ID"
+JOIN CommanderTags.CommanderTags AS cdt ON cd.ShortID = cdt."Short ID"
 WHERE Tag IN ${inputs.Tags.value}
   AND "Tag Type" IN ${inputs.tagtype.value}
   AND Active IN (${inputs.DeckStatus})
@@ -37,7 +37,7 @@ ORDER BY "Total Played" DESC
 ```DeckWithTags
 SELECT cd.*, cdt."Tag Type", cdt.Tag
 FROM CommanderDecks.CommanderDecksWRA AS cd
-JOIN CommanderTags.CommanderTags AS cdt ON cd.ID = cdt."Deck ID"
+JOIN CommanderTags.CommanderTags AS cdt ON cd.ShortID = cdt."Short ID"
 WHERE Tag IN ${inputs.Tags.value}
   AND "Tag Type" IN ${inputs.tagtype.value}
   AND Active IN (${inputs.DeckStatus})
@@ -110,8 +110,8 @@ WHERE Meta = 'BMT'
 ```UntaggedDecks
 SELECT cd.*, cdt."Tag Type", cdt.Tag
 FROM CommanderDecks.CommanderDecksWRA AS cd
-LEFT JOIN CommanderTags.CommanderTags AS cdt ON cd.ID = cdt."Deck ID"
-WHERE cdt."Deck ID" IS NULL
+LEFT JOIN CommanderTags.CommanderTags AS cdt ON cd.ShortID = cdt."Short ID"
+WHERE cdt."Short ID" IS NULL
   AND cd.Owner IN ${inputs.Owner.value}
   AND cd.Meta = 'BMT'
 ```

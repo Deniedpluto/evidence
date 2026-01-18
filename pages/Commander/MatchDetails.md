@@ -70,11 +70,13 @@ Alt. Win-Con
 ```MatchDetails
 SELECT DISTINCT
        md.Meta
+      ,md.Date
       ,md.Match
       ,md."Player Count"
       ,md.Turns
       ,md."Match Type"
       ,md."Win Type"
+      ,md."Match Rating"
       ,md.Notes
       ,ch.Owner AS Winner
       ,ch.Deck AS "Winning Deck"
@@ -87,11 +89,13 @@ JOIN CommanderHistory.CommanderHistory AS ch
 
 <DataTable data={MatchDetails} search=true sort=Match DESC>
     <Column id="Meta"/>
+    <Column id="Date"/>
     <Column id="Match"/>
     <Column id="Player Count"/>
     <Column id="Turns"/>
     <Column id="Match Type"/>
     <Column id="Win Type"/>
+    <Column id="Match Rating"/>
     <Column id="Notes"/>
     <Column id="Winner"/>
     <Column id="Winning Deck"/>

@@ -60,11 +60,12 @@ WHERE Meta = 'BMT';
 
 ```CommanderDecks
 SELECT Meta
-    ,ROW_NUMBER() OVER(ORDER BY "Bayes STR" DESC) AS Rank
+    ,ROW_NUMBER() OVER(ORDER BY "Elo" DESC) AS Rank
     ,Deck
     ,Owner
     ,Wins
     ,Played
+    ,AvgMatchRating AS "Avg Match Rating"
     ,WinRate AS "Win Rate"
     ,Elo
     ,WRA AS "Win Rate Against"
@@ -73,7 +74,7 @@ SELECT Meta
     ,"Bayes STR" AS "Bayes Strength"
     ,"Norm Bayes STR" AS "Standardized Strength"
     ,NaiveElo AS "Naive Elo"
-    ,-EloDiff3 AS "Elo Difference"
+    ,EloDiff3 AS "Elo Difference"
     ,Active
 FROM CommanderDecks.CommanderDecksWRA
 WHERE Played > ${inputs.mingames}
@@ -138,6 +139,7 @@ SELECT --Meta
       ,SUM(Played) AS "Total Played"
       ,SUM(Wins) AS "Total Wins"
       ,SUM(Wins)/SUM(Played) AS "Win Rate"
+      ,AVG(AvgMatchRating) AS "Average Match Rating"
       ,AVG(Elo) AS "Average Elo"
       ,AVG(WRA) AS "Average Win Rate Against"
       ,AVG("Bayes STR") AS "Average Bayes Strength"
@@ -157,6 +159,7 @@ GROUP BY Owner --, Meta;
     <Column id="Total Played"/>
     <Column id="Total Wins"/>
     <Column id="Win Rate" fmt = "##.0%"/>
+    <Column id="Average Match Rating"/>
     <Column id="Average Elo"/>
     <Column id="Average Win Rate Against" fmt = "##.0%"/>
     <Column id="Average Bayes Strength"/>
