@@ -19,7 +19,8 @@ WHERE TagType IN ${inputs.tagtype.value}
 ```
 
 ```TagStats
-SELECT Tag
+SELECT "Tag Type"
+      ,Tag
       ,COUNT(DISTINCT cd.Deck) AS "Number of Decks"
       ,SUM(Played) AS "Total Played"
       ,SUM(Wins) AS "Total Wins"
@@ -29,8 +30,7 @@ JOIN CommanderTags.CommanderTags AS cdt ON cd.ShortID = cdt."Short ID"
 WHERE Tag IN ${inputs.Tags.value}
   AND "Tag Type" IN ${inputs.tagtype.value}
   AND Active IN (${inputs.DeckStatus})
-  AND Meta IN ${inputs.Meta}
-GROUP BY Tag
+GROUP BY "Tag Type", Tag
 ORDER BY "Total Played" DESC
 ```
 
@@ -41,7 +41,6 @@ JOIN CommanderTags.CommanderTags AS cdt ON cd.ShortID = cdt."Short ID"
 WHERE Tag IN ${inputs.Tags.value}
   AND "Tag Type" IN ${inputs.tagtype.value}
   AND Active IN (${inputs.DeckStatus})
-  AND Meta IN ${inputs.Meta}
 ```
 <!--
 <ButtonGroup name=Meta>
@@ -117,11 +116,11 @@ WHERE cdt."Short ID" IS NULL
 ```
 
 <DataTable data={UntaggedDecks} search=true>
-    <Column id=ID/>
+    <Column id=ShortID/>
     <Column id=Deck/>
     <Column id=Owner/>
     <Column id=Played/>
     <Column id=Wins/>
-    <Column id="Win Rate" fmt = "##.0%"/>
+    <Column id="WinRate" fmt = "##.0%"/>
     <Column id=Active/>
 </DataTable>
