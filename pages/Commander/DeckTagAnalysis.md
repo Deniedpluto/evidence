@@ -68,6 +68,7 @@ WHERE Tag IN ${inputs.Tags.value}
 />
 
 <DataTable data={TagStats} search=true>
+    <Column id="Tag Type"/>
     <Column id=Tag/>
     <Column id="Number of Decks" contentType=bar/>
     <Column id="Total Played" contentType=bar/>
