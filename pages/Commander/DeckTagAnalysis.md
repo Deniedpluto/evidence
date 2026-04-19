@@ -82,12 +82,8 @@ WHERE Tag IN ${inputs.Tags.value}
     <Column id=Tag/>
     <Column id=Played/>
     <Column id=Wins/>
-    <Column id="Win Rate" fmt = "##.0%"/>
+    <Column id="WinRate" fmt = "##.0%" contentType=colorscale colorScale={['#ce5050','white','#6db678']} align=center/>
     <Column id=Elo/>
-    <Column id=WRA/>
-    <Column id=STR/>
-    <Column id="Bayes STR"/>
-    <Column id="Norm Bayes STR"/>
     <Column id=Active/>
 </DataTable>
 
@@ -103,7 +99,7 @@ WHERE Meta = 'BMT'
     name=Owner 
     value=Owner
     multiple = true
-    selectAllByDefault=true
+    defaultValue={['Deniedpluto','Wedgetable','Ghstflame','Tank']}
 />
 
 ```UntaggedDecks
