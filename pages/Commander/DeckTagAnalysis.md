@@ -114,7 +114,7 @@ WHERE cdt."Short ID" IS NULL
   AND cd.Meta = 'BMT'
 ```
 
-<DataTable data={UntaggedDecks} search=true>
+<DataTable data={UntaggedDecks} search=true emptySet=pass>
     <Column id=ShortID/>
     <Column id=Deck/>
     <Column id=Owner/>
@@ -262,6 +262,7 @@ LEFT JOIN CommanderTags.CommanderTags AS ctb ON cd.ShortID = ctb."Short ID" AND 
 LEFT JOIN CommanderTags.CommanderTags AS ctp ON cd.ShortID = ctp."Short ID" AND ctp."Tag Type" = 'Playstyle'
 WHERE cdt."Short ID" IS NOT NULL
   AND Active IN (${inputs.DeckStatus})
+  AND cd.Owner IN ${inputs.Owner.value}
   AND cd.Meta = 'BMT' 
   AND cdt."Tag Type" = 'Color Identity'
 ORDER BY "Color Order"
@@ -270,17 +271,62 @@ ORDER BY "Color Order"
 ```ColorTag
 SELECT cdt.Tag AS name,
        cd.Owner,
-       SUM(cd.Played) AS value
+       SUM(cd.Played) AS value,
+       value/SUM(SUM(cd.Played)) OVER (PARTITION BY cd.Owner) AS ColorPercent
 FROM CommanderDecks.CommanderDecksWRA AS cd
 LEFT JOIN CommanderTags.CommanderTags AS cdt ON cd.ShortID = cdt."Short ID" AND cdt."Tag Type" = 'Color'
 LEFT JOIN CommanderTags.CommanderTags AS ctb ON cd.ShortID = ctb."Short ID" AND ctb."Tag Type" = 'Bracket'
 WHERE cdt."Short ID" IS NOT NULL
+  AND cd.Owner IN ${inputs.Owner.value}
   AND Active IN (${inputs.DeckStatus})
   AND cd.Meta = 'BMT' 
   AND ctb.Tag IN ${inputs.Bracket.value}
 GROUP BY cdt.Tag, cd.Owner
 ```
-
+<Grid cols=2>
+  <BarChart data={ColorTag} 
+      title="Player Color Preferences"
+      x=name
+      sort=true
+      series=Owner
+      type=grouped
+      y=ColorPercent
+      yGridlines=false
+      yAxisLabels=false
+      labelFmt="##%"
+      labels=true
+      seriesColors={{
+          "RedFerret":'#DC143C',
+          "Macrosage":'#00FF7F',
+          "Tank":'#FFD700',
+          "Ghstflame":'#FF69B4',
+          "Wedgetable":'#228B22',
+          "Deniedpluto":'#4B0082',
+          "crazykid":'#1E90FF',
+          }}>
+  </BarChart>
+  <BarChart data={ColorTag} 
+      title="Color Preferences"
+      x=Owner
+      sort=true
+      series=name
+      type=grouped
+      y=ColorPercent
+      yGridlines=false
+      yAxisLabels=false
+      labelFmt="##%"
+      labels=true
+      seriesColors={{
+          "Blue":'#25599d',
+          "Green":'#228B22',
+          "White":'#d7d2d2',
+          "Black":'#000000',
+          "Red":'#d81313',
+          "Colorless":'#7b7b7b'
+      }}>
+  </BarChart>
+</Grid>
+<!--
 <Grid cols=4>
   <ECharts config={{
         title: {text: 'Deniedpluto', left: 'center'},
@@ -339,8 +385,9 @@ GROUP BY cdt.Tag, cd.Owner
         }]}}
   />
 </Grid>
+-->
 
-<Dropdown name=colorfilter title="Color Filter" multiple=true defaultValue="Guilds">
+<Dropdown name=colorfilter title="Color Filter" multiple=true defaultValue='2'>
     <DropdownOption   valueLabel="Mono Color" value='1' />
     <DropdownOption   valueLabel="Guilds" value='2' />
     <DropdownOption   valueLabel="Shards & Wedges" value='3' />
@@ -350,12 +397,200 @@ GROUP BY cdt.Tag, cd.Owner
 </Dropdown>
 
 ```sql ChallengePie_Color
-SELECT tag as name, SUM(Played) as value, owner
+SELECT tag as name, SUM(Played) as value, owner, value/SUM(SUM(Played)) OVER (PARTITION BY owner) AS ColorPercent
 FROM ${DeckChallengeBase}
 WHERE Colors IN ${inputs.colorfilter.value}
 GROUP BY tag, owner
 ```
 
+<Grid cols=4>
+  <BarChart data={ChallengePie_Color.filter(d => d.Owner == "Deniedpluto")} 
+      title="Color Identity Preferences"
+      x=Owner
+      sort=true
+      series=name
+      type=grouped
+      y=ColorPercent
+      yGridlines=false
+      yAxisLabels=false
+      labelFmt="##%"
+      labels=true
+      seriesColors={{
+          "Mono-Blue": '#25599d',
+          "Mono-Green": '#228B22',
+          "Mono-White": '#d7d2d2',
+          "Mono-Black": '#000000',
+          "Mono-Red": '#d81313',
+          "Azorius": '#9ffdff',
+          "Dimir": '#0d0a54',
+          "Rakdos": '#4b0909',
+          "Gruul": '#679b1e',
+          "Selesnya": '#a0ffa0',
+          "Orzhov": '#7c7b7b',
+          "Izzet": '#c21c9e',
+          'Golgari': '#8f4e19',
+          'Boros': '#ff7575',
+          'Simic': '#228b76',
+          'Esper': '#626da0',
+          'Grixis': '#4d0158',
+          'Jund': '#5c0e00',
+          'Naya': '#c1d863',
+          'Bant': '#37bfc96b',
+          'Abzan': '#d7d2d2',
+          'Jeskai': '#cf6bc8',
+          'Sultai': '#0f4d02',
+          'Mardu': '#6f0000',
+          'Temur': '#058f4f',
+          'Yore-Tiller': '#d7d2d2',
+          'Glint-Eye': '#d7d2d2',
+          'Dune-Brood': '#d7d2d2',
+          'Ink-Treader': '#d7d2d2',
+          'Witch-Maw': '#d7d2d2',
+          'WUBRG': '#321818',
+          'Colorless': '#7b7b7b'
+      }}>
+  </BarChart>
+  <BarChart data={ChallengePie_Color.filter(d => d.Owner == "Ghstflame")} 
+      title="Color Identity Preferences"
+      x=Owner
+      sort=true
+      series=name
+      type=grouped
+      y=ColorPercent
+      yGridlines=false
+      yAxisLabels=false
+      labelFmt="##%"
+      labels=true
+      seriesColors={{
+          "Mono-Blue": '#25599d',
+          "Mono-Green": '#228B22',
+          "Mono-White": '#d7d2d2',
+          "Mono-Black": '#000000',
+          "Mono-Red": '#d81313',
+          "Azorius": '#9ffdff',
+          "Dimir": '#0d0a54',
+          "Rakdos": '#4b0909',
+          "Gruul": '#679b1e',
+          "Selesnya": '#a0ffa0',
+          "Orzhov": '#7c7b7b',
+          "Izzet": '#c21c9e',
+          'Golgari': '#8f4e19',
+          'Boros': '#ff7575',
+          'Simic': '#228b76',
+          'Esper': '#626da0',
+          'Grixis': '#4d0158',
+          'Jund': '#5c0e00',
+          'Naya': '#c1d863',
+          'Bant': '#37bfc96b',
+          'Abzan': '#d7d2d2',
+          'Jeskai': '#cf6bc8',
+          'Sultai': '#0f4d02',
+          'Mardu': '#6f0000',
+          'Temur': '#058f4f',
+          'Yore-Tiller': '#d7d2d2',
+          'Glint-Eye': '#d7d2d2',
+          'Dune-Brood': '#d7d2d2',
+          'Ink-Treader': '#d7d2d2',
+          'Witch-Maw': '#d7d2d2',
+          'WUBRG': '#321818',
+          'Colorless': '#7b7b7b'
+      }}>
+  </BarChart>
+  <BarChart data={ChallengePie_Color.filter(d => d.Owner == "Tank")} 
+      title="Color Identity Preferences"
+      x=Owner
+      sort=true
+      series=name
+      type=grouped
+      y=ColorPercent
+      yGridlines=false
+      yAxisLabels=false
+      labelFmt="##%"
+      labels=true
+      seriesColors={{
+          "Mono-Blue": '#25599d',
+          "Mono-Green": '#228B22',
+          "Mono-White": '#d7d2d2',
+          "Mono-Black": '#000000',
+          "Mono-Red": '#d81313',
+          "Azorius": '#9ffdff',
+          "Dimir": '#0d0a54',
+          "Rakdos": '#4b0909',
+          "Gruul": '#679b1e',
+          "Selesnya": '#a0ffa0',
+          "Orzhov": '#7c7b7b',
+          "Izzet": '#c21c9e',
+          'Golgari': '#8f4e19',
+          'Boros': '#ff7575',
+          'Simic': '#228b76',
+          'Esper': '#626da0',
+          'Grixis': '#4d0158',
+          'Jund': '#5c0e00',
+          'Naya': '#c1d863',
+          'Bant': '#37bfc96b',
+          'Abzan': '#d7d2d2',
+          'Jeskai': '#cf6bc8',
+          'Sultai': '#0f4d02',
+          'Mardu': '#6f0000',
+          'Temur': '#058f4f',
+          'Yore-Tiller': '#d7d2d2',
+          'Glint-Eye': '#d7d2d2',
+          'Dune-Brood': '#d7d2d2',
+          'Ink-Treader': '#d7d2d2',
+          'Witch-Maw': '#d7d2d2',
+          'WUBRG': '#321818',
+          'Colorless': '#7b7b7b'
+      }}>
+  </BarChart>
+  <BarChart data={ChallengePie_Color.filter(d => d.Owner == "Wedgetable")} 
+      title="Color Identity Preferences"
+      x=Owner
+      sort=true
+      series=name
+      type=grouped
+      y=ColorPercent
+      yGridlines=false
+      yAxisLabels=false
+      labelFmt="##%"
+      labels=true
+      seriesColors={{
+          "Mono-Blue": '#25599d',
+          "Mono-Green": '#228B22',
+          "Mono-White": '#d7d2d2',
+          "Mono-Black": '#000000',
+          "Mono-Red": '#d81313',
+          "Azorius": '#9ffdff',
+          "Dimir": '#0d0a54',
+          "Rakdos": '#4b0909',
+          "Gruul": '#679b1e',
+          "Selesnya": '#a0ffa0',
+          "Orzhov": '#7c7b7b',
+          "Izzet": '#c21c9e',
+          'Golgari': '#8f4e19',
+          'Boros': '#ff7575',
+          'Simic': '#228b76',
+          'Esper': '#626da0',
+          'Grixis': '#4d0158',
+          'Jund': '#5c0e00',
+          'Naya': '#c1d863',
+          'Bant': '#37bfc96b',
+          'Abzan': '#d7d2d2',
+          'Jeskai': '#cf6bc8',
+          'Sultai': '#0f4d02',
+          'Mardu': '#6f0000',
+          'Temur': '#058f4f',
+          'Yore-Tiller': '#d7d2d2',
+          'Glint-Eye': '#d7d2d2',
+          'Dune-Brood': '#d7d2d2',
+          'Ink-Treader': '#d7d2d2',
+          'Witch-Maw': '#d7d2d2',
+          'WUBRG': '#321818',
+          'Colorless': '#7b7b7b'
+      }}>
+  </BarChart>
+</Grid>
+
+<!--
 <Grid cols=4>
   <ECharts config={{
         title: {text: 'Deniedpluto', left: 'center'},
@@ -522,13 +757,35 @@ GROUP BY tag, owner
         }]}}
   />
 </Grid>
+-->
 
 ```Playstyle
-SELECT Playstyle as name, SUM(Played) as value, owner
+SELECT Playstyle as name, SUM(Played) as value, owner, value/SUM(SUM(Played)) OVER (PARTITION BY owner) AS Percent
 FROM ${DeckChallengeBase}
 WHERE Bracket IN ${inputs.Bracket.value}
 GROUP BY Playstyle, owner
 ```
+
+<BarChart data={Playstyle} 
+    title="Playstyle"
+    x=Owner
+    sort=false
+    series=name
+    type=grouped
+    y=Percent
+    yGridlines=false
+    yAxisLabels=false
+    labelFmt="##%"
+    labels=true
+    seriesColors={{
+            "Midrange": '#336a34',
+            "Aggro": '#b00000',
+            "Control": '#72bfe0',
+            "Combo": '#780c74'
+    }}>
+</BarChart>
+
+<!--
 <Grid cols=4>
   <ECharts config={{
         title: {text: 'Deniedpluto', left: 'center'},
@@ -583,13 +840,36 @@ GROUP BY Playstyle, owner
         }]}}
   />
 </Grid>
-
+-->
 
 ```Bracket
-SELECT Bracket as name, SUM(Played) as value, owner
+SELECT Bracket as name, SUM(Played) as value, owner, value/SUM(SUM(Played)) OVER (PARTITION BY owner) AS Percent
 FROM ${DeckChallengeBase}
 GROUP BY Bracket, owner
 ```
+
+<BarChart data={Bracket} 
+    title="Bracket"
+    x=Owner
+    sort=true
+    series=name
+    type=stacked100
+    y=Percent
+    yGridlines=false
+    yAxisLabels=false
+    labelFmt="##%"
+    labels=true
+    swapXY=true
+    seriesColors={{
+            "1": '#25599d',
+            "2": '#228B22',
+            "3": '#FFD700',
+            "4": '#db7d25',
+            "5": '#d81313'
+    }}>
+</BarChart>
+
+<!--
 <Grid cols=4>
   <ECharts config={{
         title: {text: 'Deniedpluto', left: 'center'},
@@ -648,7 +928,7 @@ GROUP BY Bracket, owner
         }]}}
   />
 </Grid>
-
+-->
 
 ## Deck Challenge
 
