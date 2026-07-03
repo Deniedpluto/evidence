@@ -8,15 +8,15 @@ We added new categories to track in 2026, namely Match Rating (1-5) and Date so 
 
 ```Owners
 SELECT DISTINCT Owner FROM CommanderDecks.CommanderDecksWRA
-WHERE Meta = 'BMT';
---Meta Reference
+WHERE Meta = 'BMT'
+
 ```
 
 ```Nemesis
 SELECT Owner AS Player, 
        DefeatedBy AS Nemesis, 
        COUNT(*) AS Defeats,
-       RANK() OVER(PARTITION BY Player ORDER BY Defeats) AS NemesisRank
+       DENSE_RANK() OVER(PARTITION BY Player ORDER BY Defeats DESC) AS NemesisRank
 FROM CommanderHistory.CommanderHistory 
 WHERE defeatedby is not null
   AND Match IN (SELECT Match FROM MatchDetails.MatchDetails WHERE Date >= '2025-12-31')
@@ -25,12 +25,12 @@ GROUP BY Owner, defeatedby
 
 ```ImpactPlayersCards
 SELECT 'Impact Player' AS ImpactType
-  	  ,MVP AS Impact
-      ,COUNT(Match) AS ImpactCount
-FROM MatchDetails.MatchDetails
-WHERE Date >= '2025-12-31'
-    AND MVP IS NOT NULL
-GROUP BY MVP
+  	  ,Owner AS Impact
+      ,COALESCE(COUNT(md.Match), 0) AS ImpactCount
+FROM ${Owners} AS o
+LEFT JOIN MatchDetails.MatchDetails AS md ON o.Owner = md.MVP
+WHERE (md.Date >= '2025-12-31' OR md.Date IS NULL)
+GROUP BY Owner
 UNION
 SELECT 'Impact Card' AS ImpactType
   	  ,MVC AS Impact
@@ -81,7 +81,7 @@ Who has killed you the most? This is a fun stat to see who has been your biggest
     comparisonFmt="##"
 />
 
-<DataTable data={Nemesis}  >
+<DataTable data={Nemesis} search=true>
     <Column id=Player/>
     <Column id=Nemesis/>
     <Column id=Defeats/>
@@ -113,8 +113,8 @@ Who has had the most impact on the game? What cards have had the most impact? Is
 />
 
 <DataTable data={ImpactPlayersCards.filter(d => d.ImpactType == "Impact Card")}  >
-    <Column id=Impact/>
-    <Column id=ImpactCount/>
+    <Column id=Impact title = "Card Name"/>
+    <Column id=ImpactCount title = "Impact Count"/>
 </DataTable>
 
 ### Deck Stats
