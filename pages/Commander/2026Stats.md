@@ -12,8 +12,65 @@ WHERE Meta = 'BMT';
 --Meta Reference
 ```
 
+```Nemesis
+SELECT Owner AS Player, 
+       DefeatedBy AS Nemesis, 
+       COUNT(*) AS Defeats,
+       RANK() OVER(PARTITION BY Player ORDER BY Defeats) AS NemesisRank
+FROM CommanderHistory.CommanderHistory 
+WHERE defeatedby is not null
+GROUP BY Owner, defeatedby
+```
+
+### Nemesis Stats (New!)
+Who has killed you the most? This is a fun stat to see who has been your biggest rival over time. The table below shows the number of times each player has killed you in 2026.
+
+<BigValue 
+    data={Nemesis.filter(d => d.NemesisRank == 1).filter(d => d.Player == "Deniedpluto")}
+    value=Nemesis
+    title="Deniedpluto's Nemesis"
+    comparison=Defeats
+    comparisonTitle="Defeats"
+    comparisonDelta=false
+    comparisonFmt="##"
+/>
+<BigValue 
+    data={Nemesis.filter(d => d.NemesisRank == 1).filter(d => d.Player == "Ghstflame")}
+    value=Nemesis
+    title="Ghstflame's Nemesis"
+    comparison=Defeats
+    comparisonTitle="Defeats"
+    comparisonDelta=false
+    comparisonFmt="##"
+/>
+<BigValue 
+    data={Nemesis.filter(d => d.NemesisRank == 1).filter(d => d.Player == "Tank")}
+    value=Nemesis
+    title="Tank's Nemesis"
+    comparison=Defeats
+    comparisonTitle="Defeats"
+    comparisonDelta=false
+    comparisonFmt="##"
+/>
+<BigValue 
+    data={Nemesis.filter(d => d.NemesisRank == 1).filter(d => d.Player == "Wedgetable")}
+    value=Nemesis
+    title="Wedgetable's Nemesis"
+    comparison=Defeats
+    comparisonTitle="Defeats"
+    comparisonDelta=false
+    comparisonFmt="##"
+/>
+
+<DataTable data={Nemesis}  >
+    <Column id=Player/>
+    <Column id=Nemesis/>
+    <Column id=Defeats/>
+    <Column id=NemesisRank/>
+</DataTable>
+
 ### Deck Stats
-   This looks only at games played in 2026.
+This looks only at games played in 2026.
 
 ```Decks2026
 SELECT Meta,
@@ -235,6 +292,25 @@ ORDER BY PlayerCount, PlayerOrder
     </DataTable>
 </Grid>
 
+But is it statisically significant? For 3 player 90th percentile ChiSqStat threshold is 4.6, 95% is 5.99, and 99% is 9.21. For 4 player, the thresholds are 6.25, 7.81, and 11.34 respectively. See caveats in the Player Order Analysis page for more information on the Chi-Squared test and how to interpret the results.
+
+```PlayerOrderStats
+SELECT *
+FROM ChiSquared.ChiSquared
+WHERE ChiGroup = '2026'
+```
+
+<DataTable
+    data={PlayerOrderStats}
+    sort=PlayerCount>
+    <Column id=PlayerCount/>
+    <Column id=TotalGames/>
+    <Column id=DoF/>
+    <Column id=ChiSqStat/>
+    <Column id="MaxConfidenceLevel"/>
+    <Column id=PValue/>
+</DataTable>
+
 The the breakout below we can see the per player play order win rates. This is currently just another data point, however, I plan on making a weighted win rate that takes into account how often each player plays each position and their win rate overall to give a more accurate estimate of the expected win rate for each position.
 
 ```PlayerPlayOrder
@@ -302,6 +378,10 @@ ORDER BY Owner, PlayerCount, PlayerOrder
         <Column id="WinRate" fmt = "##.0%" totalAgg=weightedMean weightCol=Games contentType=colorscale/>
     </DataTable>
 </Grid>
+
+
+
+
 
 ```PlayerWinRateGroup
 With Players AS (

@@ -97,6 +97,7 @@ It is important to note that this assumes that player does not affect win rate o
 ```PlayerOrderStats
 SELECT *
 FROM ChiSquared.ChiSquared
+WHERE ChiGroup = 'Base'
 ```
 
 <DataTable
