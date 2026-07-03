@@ -19,8 +19,27 @@ SELECT Owner AS Player,
        RANK() OVER(PARTITION BY Player ORDER BY Defeats) AS NemesisRank
 FROM CommanderHistory.CommanderHistory 
 WHERE defeatedby is not null
+  AND Match IN (SELECT Match FROM MatchDetails.MatchDetails WHERE Date >= '2025-12-31')
 GROUP BY Owner, defeatedby
 ```
+
+```ImpactPlayersCards
+SELECT 'Impact Player' AS ImpactType
+  	  ,MVP AS Impact
+      ,COUNT(Match) AS ImpactCount
+FROM MatchDetails.MatchDetails
+WHERE Date >= '2025-12-31'
+    AND MVP IS NOT NULL
+GROUP BY MVP
+UNION
+SELECT 'Impact Card' AS ImpactType
+  	  ,MVC AS Impact
+      ,COUNT(Match) AS ImpactCount
+FROM MatchDetails.MatchDetails
+WHERE Date >= '2025-12-31'
+    AND MVC IS NOT NULL
+GROUP BY MVC
+``` 
 
 ### Nemesis Stats (New!)
 Who has killed you the most? This is a fun stat to see who has been your biggest rival over time. The table below shows the number of times each player has killed you in 2026.
@@ -67,6 +86,35 @@ Who has killed you the most? This is a fun stat to see who has been your biggest
     <Column id=Nemesis/>
     <Column id=Defeats/>
     <Column id=NemesisRank/>
+</DataTable>
+
+### Player and Card Impact Stats (New!)
+Who has had the most impact on the game? What cards have had the most impact? Is this the new game changers list (no)? Who is the real MVP? All these questions and more answered in the data below.
+
+<BigValue 
+    data={ImpactPlayersCards.filter(d => d.Impact == "Deniedpluto")}
+    value=ImpactCount
+    title="Deniedpluto's Impact"
+/>
+<BigValue 
+    data={ImpactPlayersCards.filter(d => d.Impact == "Ghstflame")}
+    value=ImpactCount
+    title="Ghstflame's Impact"
+/>
+<BigValue 
+    data={ImpactPlayersCards.filter(d => d.Impact == "Tank")}
+    value=ImpactCount
+    title="Tank's Impact"
+/>
+<BigValue 
+    data={ImpactPlayersCards.filter(d => d.Impact == "Wedgetable")}
+    value=ImpactCount
+    title="Wedgetable's Impact"
+/>
+
+<DataTable data={ImpactPlayersCards.filter(d => d.ImpactType == "Impact Card")}  >
+    <Column id=Impact/>
+    <Column id=ImpactCount/>
 </DataTable>
 
 ### Deck Stats
@@ -378,10 +426,6 @@ ORDER BY Owner, PlayerCount, PlayerOrder
         <Column id="WinRate" fmt = "##.0%" totalAgg=weightedMean weightCol=Games contentType=colorscale/>
     </DataTable>
 </Grid>
-
-
-
-
 
 ```PlayerWinRateGroup
 With Players AS (
