@@ -76,22 +76,29 @@
           "href": "/Commander/WinRateoverTime"
         },
         {
-          "label": "MatchcDetails",
+          "label": "MatchMaker",
           "order": 5,
+          "show": true,
+          "title": "Match Maker",
+          "href": "/Commander/MatchMaker"
+        }, 
+        {
+          "label": "MatchcDetails",
+          "order": 6,
           "show": true,
           "title": "Match Details",
           "href": "/Commander/MatchDetails"
         },        
         {
           "label": "DeckTagAnalysis",
-          "order": 6,
+          "order": 7,
           "show": true,
           "title": "Tag Analysis",
           "href": "/Commander/DeckTagAnalysis"
         },
         {
           "label": "RankingProcess",
-          "order": 7,
+          "order": 8,
           "show": true,
           "title": "Ranking Process",
           "href": "/Commander/RankingProcess"
