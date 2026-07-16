@@ -29,26 +29,29 @@ WHERE Meta = 'BMT'
   AND Active = 1
 ORDER BY Owner
 ```
-<Dropdown data={DeckOptions}
-    name=SelectedDeck
-    value=Deck
-    multiple = true
-    defaultValue='+1 For Counters'/>
 
-<Dropdown data={Owners}
-    name=Opponents
-    title="Opponents"
-    value=Owner
-    multiple=true
-    defaultValue={['Deniedpluto','Ghstflame','Tank','Wedgetable']}/>
-<Slider
-    title="Number of Opponent Decks"
-    name=DeckCount
-    min=1
-    max=10
-    defaultValue=3
-    size=medium
-/>
+<Grid cols=3>
+    <Dropdown data={DeckOptions}
+        name=SelectedDeck
+        title="Selected Decks"
+        value=Deck
+        multiple = true
+        defaultValue='+1 For Counters'/>
+    <Dropdown data={Owners}
+        name=Opponents
+        title="Opponents"
+        value=Owner
+        multiple=true
+        defaultValue={['Deniedpluto','Ghstflame','Tank','Wedgetable']}/>
+    <Slider
+        title="Number of Opponent Decks"
+        name=DeckCount
+        min=1
+        max=10
+        defaultValue=3
+        size=medium
+    />
+</Grid>
 
 ```ClosestDecks
 WITH selected AS (
@@ -127,6 +130,8 @@ ORDER BY Owner
     <ButtonGroupItem valueLabel="Legacy" value='Legacy'/>
     <ButtonGroupItem valueLabel="Freshness" value='Freshness'/>
     <ButtonGroupItem valueLabel="Staleness" value='Staleness'/>
+    <ButtonGroupItem valueLabel="Elo" value='Elo'/>
+    <ButtonGroupItem valueLabel="InverseElo" value='InvElo'/>
 </ButtonGroup>
 
 ```RandomSelection
@@ -138,6 +143,16 @@ WITH latest_match AS (
 ),
 history_stats AS (
     SELECT
+        Owner,
+        MIN(Elo) AS min_elo,
+        MAX(Elo) AS max_elo
+    FROM CommanderHistory.CommanderHistory
+    WHERE Meta = 'BMT'
+      AND Match > 0
+    GROUP BY Owner
+),
+deck_history AS (
+    SELECT
         Owner || ' - ' || Deck AS ShortID,
         Owner,
         Deck,
@@ -146,7 +161,7 @@ history_stats AS (
     FROM CommanderHistory.CommanderHistory
     WHERE Meta = 'BMT'
       AND Match > 0
-    GROUP BY ShortID, Owner, Deck
+    GROUP BY Owner, Deck
 ),
 weighted AS (
     SELECT
@@ -159,18 +174,23 @@ weighted AS (
             WHEN '${inputs.RandomCriteria}' = 'Base' THEN 1
             WHEN '${inputs.RandomCriteria}' = 'Popularity' THEN GREATEST(COALESCE(d.Played, 0), 1)
             WHEN '${inputs.RandomCriteria}' = 'Unpopularity' THEN 1.0 / NULLIF(COALESCE(d.Played, 0) + 1, 0)
-            WHEN '${inputs.RandomCriteria}' = 'New' THEN GREATEST(COALESCE(h.first_play_match, 1), 1)
-            WHEN '${inputs.RandomCriteria}' = 'Legacy' THEN 1.0 / NULLIF(COALESCE(h.first_play_match, 1) + 1, 0)
-            WHEN '${inputs.RandomCriteria}' = 'Freshness' THEN GREATEST(COALESCE(h.last_play_match, 1), 1)
-            WHEN '${inputs.RandomCriteria}' = 'Staleness' THEN GREATEST(COALESCE(lm.max_match - COALESCE(h.last_play_match, 0), 1), 1)
+            WHEN '${inputs.RandomCriteria}' = 'New' THEN GREATEST(COALESCE(dh.first_play_match, 1), 1)
+            WHEN '${inputs.RandomCriteria}' = 'Legacy' THEN 1.0 / NULLIF(COALESCE(dh.first_play_match, 1) + 1, 0)
+            WHEN '${inputs.RandomCriteria}' = 'Freshness' THEN GREATEST(COALESCE(dh.last_play_match, 1), 1)
+            WHEN '${inputs.RandomCriteria}' = 'Staleness' THEN GREATEST(COALESCE(lm.max_match - COALESCE(dh.last_play_match, 0), 1), 1)
+            WHEN '${inputs.RandomCriteria}' = 'Elo' THEN GREATEST(COALESCE(d.Elo, 1000) - h.min_elo, 1)
+            WHEN '${inputs.RandomCriteria}' = 'InvElo' THEN GREATEST(h.max_elo - COALESCE(d.Elo, 1000), 1)
             ELSE 1
         END AS Weight
     FROM CommanderDecks.CommanderDecksWRA d
     LEFT JOIN history_stats h
-      ON h.ShortID = d.ShortID
-     AND h.Owner = d.Owner
+      ON h.Owner = d.Owner
+    LEFT JOIN deck_history dh
+      ON dh.ShortID = d.ShortID
+     AND dh.Owner = d.Owner
     CROSS JOIN latest_match lm
     WHERE d.Meta = 'BMT'
+      AND d.Deck NOT IN ('Commander Draft Deck', 'Rando Cardrissian')
       AND d.Active = 1
       AND d.Owner = '${inputs.RandomOwner.value}'
 ),
@@ -204,7 +224,7 @@ FROM (
         n.NormalizedWeight,
         d.RandomValue*100 AS RandomValue,
         SUM(n.NormalizedWeight) OVER (
-          ORDER BY n.Deck
+          ORDER BY n.Weight
           ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
         ) AS RunningWeight    FROM normalized n
     CROSS JOIN draw d
@@ -232,6 +252,16 @@ WITH latest_match AS (
 ),
 history_stats AS (
     SELECT
+        Owner,
+        MIN(Elo) AS min_elo,
+        MAX(Elo) AS max_elo
+    FROM CommanderHistory.CommanderHistory
+    WHERE Meta = 'BMT'
+      AND Match > 0
+    GROUP BY Owner
+),
+deck_history AS (
+    SELECT
         Owner || ' - ' || Deck AS ShortID,
         Owner,
         Deck,
@@ -240,7 +270,7 @@ history_stats AS (
     FROM CommanderHistory.CommanderHistory
     WHERE Meta = 'BMT'
       AND Match > 0
-    GROUP BY ShortID, Owner, Deck
+    GROUP BY Owner, Deck
 ),
 weighted AS (
     SELECT
@@ -253,18 +283,23 @@ weighted AS (
             WHEN '${inputs.RandomCriteria}' = 'Base' THEN 1
             WHEN '${inputs.RandomCriteria}' = 'Popularity' THEN GREATEST(COALESCE(d.Played, 0), 1)
             WHEN '${inputs.RandomCriteria}' = 'Unpopularity' THEN 1.0 / NULLIF(COALESCE(d.Played, 0) + 1, 0)
-            WHEN '${inputs.RandomCriteria}' = 'New' THEN GREATEST(COALESCE(h.first_play_match, 1), 1)
-            WHEN '${inputs.RandomCriteria}' = 'Legacy' THEN 1.0 / NULLIF(COALESCE(h.first_play_match, 1) + 1, 0)
-            WHEN '${inputs.RandomCriteria}' = 'Freshness' THEN GREATEST(COALESCE(h.last_play_match, 1), 1)
-            WHEN '${inputs.RandomCriteria}' = 'Staleness' THEN GREATEST(COALESCE(lm.max_match - COALESCE(h.last_play_match, 0), 1), 1)
+            WHEN '${inputs.RandomCriteria}' = 'New' THEN GREATEST(COALESCE(dh.first_play_match, 1), 1)
+            WHEN '${inputs.RandomCriteria}' = 'Legacy' THEN 1.0 / NULLIF(COALESCE(dh.first_play_match, 1) + 1, 0)
+            WHEN '${inputs.RandomCriteria}' = 'Freshness' THEN GREATEST(COALESCE(dh.last_play_match, 1), 1)
+            WHEN '${inputs.RandomCriteria}' = 'Staleness' THEN GREATEST(COALESCE(lm.max_match - COALESCE(dh.last_play_match, 0), 1), 1)
+            WHEN '${inputs.RandomCriteria}' = 'Elo' THEN GREATEST(COALESCE(d.Elo, 1000) - h.min_elo, 1)
+            WHEN '${inputs.RandomCriteria}' = 'InvElo' THEN GREATEST(h.max_elo - COALESCE(d.Elo, 1000), 1)
             ELSE 1
         END AS Weight
     FROM CommanderDecks.CommanderDecksWRA d
     LEFT JOIN history_stats h
-      ON h.ShortID = d.ShortID
-     AND h.Owner = d.Owner
+      ON h.Owner = d.Owner
+    LEFT JOIN deck_history dh
+      ON dh.ShortID = d.ShortID
+     AND dh.Owner = d.Owner
     CROSS JOIN latest_match lm
     WHERE d.Meta = 'BMT'
+      AND d.Deck NOT IN ('Commander Draft Deck', 'Rando Cardrissian')
       AND d.Active = 1
       AND d.Owner = '${inputs.RandomOwner.value}'
 ),
@@ -285,11 +320,11 @@ SELECT Owner
       ,Weight
       ,NormalizedWeight
       ,SUM(NormalizedWeight * 100) OVER (
-          ORDER BY Deck
+          ORDER BY Weight
           ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
       ) AS RunningWeight
 FROM normalized
-ORDER BY RunningWeight DESC, Deck
+ORDER BY RunningWeight DESC, Weight DESC
 ```
 
 <DataTable data={RandomWeightedDecks} search=true>
