@@ -869,6 +869,92 @@ GROUP BY Bracket, owner
     }}>
 </BarChart>
 
+<Dropdown data={Owners}
+    name=PlaystyleOwner
+    title="Owner"
+    value=Owner
+    multiple=true
+    defaultValue={['Deniedpluto']}/>
+
+
+```PlaystyleMatchupSummary
+WITH playstyle_tags AS (
+    SELECT "Short ID",
+           Tag AS Playstyle
+    FROM CommanderTags.CommanderTags
+    WHERE "Tag Type" = 'Playstyle'
+),
+matches_base AS (
+    SELECT
+        ch.Match,
+        pt.Playstyle,
+        bt.Tag AS Bracket,
+  		SUM(CASE WHEN ch.Place = 1 THEN 1 ELSE 0 END) AS Wins,
+  	    COUNT(ch.Match) AS Played
+    FROM CommanderHistory.CommanderHistory AS ch
+    JOIN CommanderDecks.CommanderDecksWRA AS cd ON cd.ShortId = ch.Owner || ' - ' || ch.Deck
+    LEFT JOIN playstyle_tags pt
+      ON pt."Short ID" = ch.Owner || ' - ' || ch.Deck
+    LEFT JOIN CommanderTags.CommanderTags AS bt
+      ON bt."Short ID" = ch.Owner || ' - ' || ch.Deck
+     AND bt."Tag Type" = 'Bracket'
+    WHERE ch.Meta = 'BMT'
+      AND ch.Match > 0
+      AND pt.Playstyle IS NOT NULL
+      AND ch.Owner IN ${inputs.PlaystyleOwner.value}
+      AND cd.Active IN (${inputs.DeckStatus})
+    GROUP BY Match, Playstyle, Bracket
+),
+match_list AS (
+SELECT Match
+	  ,list_sort(list_distinct(list(Bracket))) AS BracketList
+  	  ,length(list_distinct(list(Bracket))) AS Brackets
+FROM matches_base
+GROUP BY Match
+HAVING list_has_all(string_to_array(regexp_replace(${inputs.Bracket.value}, '[()\''''\s]', '', 'g'), ',')::INTEGER[], Bracketlist)
+),
+playstyle_agg AS (
+  SELECT Playstyle
+  		,SUM(Wins) AS Wins
+  		,SUM(Played) AS Played
+		,SUM(Wins)/SUM(Played) AS WinRate
+  FROM matches_base
+  WHERE Match IN (SELECT Match FROM match_list)
+  GROUP BY Playstyle
+),
+playstyle_base AS (
+    SELECT Match
+  		,Playstyle
+  		,SUM(Wins) AS Wins
+  		,SUM(Played) AS Played
+  FROM matches_base
+  WHERE Match IN (SELECT Match FROM match_list)
+  GROUP BY Match, Playstyle
+)
+SELECT pb.Playstyle
+  	  ,pb2.Playstyle AS OpponentsPlaystyle
+  	  ,SUM(CASE WHEN pb.Playstyle=pb2.Playstyle AND pb.Played = 1 THEN 0 ELSE pb.Wins END) AS Wins
+  	  ,SUM(CASE WHEN pb.Playstyle=pb2.Playstyle AND pb.Played = 1 THEN 0 ELSE pb2.Played END) AS Played
+  	  ,SUM(CASE WHEN pb.Playstyle=pb2.Playstyle AND pb.Played = 1 THEN 0 ELSE pb.Wins END)/SUM(CASE WHEN pb.Playstyle=pb2.Playstyle AND pb.Played = 1 THEN 0 ELSE pb2.Played END) AS WinRate
+      ,ANY_VALUE(pa.WinRate) AS BaseWinRate
+  	  ,SUM(CASE WHEN pb.Playstyle=pb2.Playstyle AND pb.Played = 1 THEN 0 ELSE pb.Wins END)/SUM(CASE WHEN pb.Playstyle=pb2.Playstyle AND pb.Played = 1 THEN 0 ELSE pb2.Played END) - ANY_VALUE(pa.WinRate) AS WinRateDiff
+FROM playstyle_base as pb
+JOIN playstyle_base as pb2 ON pb.Match = pb2.Match
+JOIN playstyle_agg as pa ON pb.Playstyle = pa.Playstyle
+GROUP BY pb.Playstyle, pb2.Playstyle
+ORDER BY pb.Playstyle, OpponentsPlaystyle
+```
+
+<DataTable data={PlaystyleMatchupSummary} search=true>
+    <Column id=Playstyle title="Playstyle"/>
+    <Column id=OpponentsPlaystyle title="vs."/>
+    <Column id=Played title="Games"/>
+    <Column id=Wins/>
+    <Column id=WinRate fmt = "#0.0%"/>
+    <Column id=BaseWinRate fmt = "#0.0%" title="Baseline"/>
+    <Column id=WinRateDiff fmt = "+#0.0%;-#0.0%;0.0%" title="Delta vs Baseline"/>
+</DataTable>
+
 <!--
 <Grid cols=4>
   <ECharts config={{
