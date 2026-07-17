@@ -869,6 +869,8 @@ GROUP BY Bracket, owner
     }}>
 </BarChart>
 
+## Playstyle Matchups
+
 <Dropdown data={Owners}
     name=PlaystyleOwner
     title="Owner"
