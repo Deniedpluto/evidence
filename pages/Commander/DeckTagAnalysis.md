@@ -874,8 +874,22 @@ GROUP BY Bracket, owner
     title="Owner"
     value=Owner
     multiple=true
-    defaultValue={['Deniedpluto']}/>
+    selectAllByDefault=true
+/>
 
+<ButtonGroup name=DeckStatus>
+    <ButtonGroupItem valueLabel="All" value="0,1"/>
+    <ButtonGroupItem valueLabel="Active" value="1" default/>
+    <ButtonGroupItem valueLabel="Inactive" value="0"/>
+</ButtonGroup>
+
+<Dropdown name=Bracket title="Bracket" multiple=true selectAllByDefault=true>
+    <DropdownOption valueLabel="Exhibition" value=1/>
+    <DropdownOption valueLabel="Core" value='2'/>
+    <DropdownOption valueLabel="Upgraded" value=3/>
+    <DropdownOption valueLabel="Optimized" value=4/>
+    <DropdownOption valueLabel="cEDH" value=5/>
+</Dropdown>
 
 ```PlaystyleMatchupSummary
 WITH playstyle_tags AS (
@@ -945,14 +959,14 @@ GROUP BY pb.Playstyle, pb2.Playstyle
 ORDER BY pb.Playstyle, OpponentsPlaystyle
 ```
 
-<DataTable data={PlaystyleMatchupSummary} search=true>
+<DataTable data={PlaystyleMatchupSummary} search=true rows=all>
     <Column id=Playstyle title="Playstyle"/>
     <Column id=OpponentsPlaystyle title="vs."/>
-    <Column id=Played title="Games"/>
-    <Column id=Wins/>
-    <Column id=WinRate fmt = "#0.0%"/>
-    <Column id=BaseWinRate fmt = "#0.0%" title="Baseline"/>
-    <Column id=WinRateDiff fmt = "+#0.0%;-#0.0%;0.0%" title="Delta vs Baseline"/>
+    <Column id=Wins contentType=bar/>
+    <Column id=Played contentType=bar title="Games"/>
+    <Column id=WinRate fmt = "##.0%" contentType=colorscale colorScale={['#ce5050','white','#6db678']} align=center title="Win Rate"/>
+    <Column id=BaseWinRate fmt = "##.0%" contentType=colorscale colorScale={['#ce5050','white','#6db678']} align=center title="Baseline"/>
+    <Column id=WinRateDiff contentType=delta fmt="#0.0%" title="Delta vs Baseline"/>
 </DataTable>
 
 <!--
