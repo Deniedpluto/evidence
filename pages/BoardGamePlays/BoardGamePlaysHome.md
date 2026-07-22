@@ -49,7 +49,12 @@ GROUP BY gameType, playMonth
         "Cooperative":'#2f80ed',
         "Competitive":'#cf0d06',
     }}>
-    <ReferenceArea xMin='2023-12-01' xMax='2025-01-01' label='New Baby'/>
+    <ReferenceArea xMin='2017-08-01' xMax='2019-06-15' label='Spokane' color='#e64640'/>
+    <ReferenceArea xMin='2019-06-16' xMax='2021-05-30' label='Mukilteo' color='#9300c0'/>
+    <ReferenceArea xMin='2021-06-01' xMax='2025-06-20' label='Redlands' color='#e16749'/>
+    <ReferenceArea xMin='2025-06-20' xMax='2027-06-30' label='Menlo Park' color='#2f44e4'/>
+    <ReferenceArea xMin='2020-03-05' xMax='2021-06-30' label='Covid' color='#000000'/>
+    <ReferenceArea xMin='2023-12-01' xMax='2025-01-01' label='New Baby' color='#75e285'/>
 </BarChart>
 
 ### Board Game Stats

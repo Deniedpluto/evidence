@@ -98,7 +98,7 @@ WHERE RankWithinOwner <= ${inputs.DeckCount}
 ORDER BY ReferenceDeck, Owner, EloDistance
 ```
 
-<DataTable data={ClosestDecks} search=true>
+<DataTable data={ClosestDecks} search=true rows=all>
     <Column id=ReferenceDeck/>
     <Column id=Owner/>
     <Column id=Deck/>

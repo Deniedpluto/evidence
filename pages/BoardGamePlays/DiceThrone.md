@@ -22,10 +22,11 @@ SELECT DISTINCT
       ,TeamRole
       ,CASE WHEN role IN ('Barbarian', 'Moon Elf', 'Paladin', 'Monk', 'Shadow Thief', 'Treant', 'Ninja', 'Pyromancer') THEN 'Season 1'
             WHEN role IN ('Cursed Pirate', 'Artificer', 'Seraph', 'Gunslinger', 'Tactician', 'Huntress', 'Vampire Lord', 'Samurai') THEN 'Season 2'
-            WHEN role IN ('Black Panther', 'Black Widow', 'Captain Marvel', 'Dr. Strange', 'Thor', 'Spiderman', 'Scarlett Witch', 'Loki') THEN 'Marvel'
+            WHEN role IN ('Black Panther', 'Black Widow', 'Captain Marvel', 'Dr. Strange', 'Thor', 'Spiderman', 'Scarlet Witch', 'Loki') THEN 'Marvel'
             WHEN role IN ('Iceman', 'Storm', 'Wolverine', 'Deadpool', 'Psylock', 'Gambit', 'Cyclops', 'Rogue', 'Jean Gray') THEN 'X-Men'
             WHEN role IN ('Santa', 'Krampus') THEN 'Santa vs Krampus'
-            WHEN role IN ('Pale Lady', 'Raveness', 'Headless Horseman', 'Necromancer') THEN 'Outcasts'
+            WHEN role IN ('Pale Lady', 'The Raveness', 'The Headless Horseman', 'Necromancer') THEN 'Outcasts'
+            WHEN role IN ('Forge Master', 'Sun Elf', 'Druid', 'Duelist') THEN 'Vanguard'
             ELSE null END AS roleSet
 FROM PlayData.PlayData
 WHERE gameName LIKE '%Dice Throne%' 
@@ -187,6 +188,10 @@ preppedplays AS (
           ,SUM(CASE WHEN p2.winner = true THEN 1 ELSE 0 END) AS P2_Wins
           ,COUNT(p1.playID) AS Plays
           ,CAST(P1_Wins AS VARCHAR) || ' to ' || CAST(P2_Wins AS VARCHAR) AS Score
+          ,CASE WHEN P1_Wins > P2_Wins THEN 1
+                WHEN P2_Wins > P1_Wins THEN 2
+                WHEN P1_Wins + P2_Wins = 0 THEN 0
+                ELSE 3 END AS Score_Color
     FROM p1plays AS p1
     JOIN p2plays AS p2 ON p1.playID = p2.playID
     GROUP BY p1.role, p2.role
@@ -204,6 +209,7 @@ final AS (
 PIVOT final
 ON P2_Role
 USING FIRST(Score)
+
 ```
 
 ```sql startplayerwins
@@ -229,7 +235,7 @@ GROUP BY d.Winners, m.startPlayer
     <Column id=Affect fmt=pct contentType=delta/>
 </DataTable>
 
-<DataTable data={headtohead} search=true sort="Start_PLayer"/>
+<DataTable data={headtohead} search=true sort="Start_PLayer" rows=all colorScale=blue/>
 
 ## Dice Throne Adventures
 

@@ -63,7 +63,25 @@ Alt. Win-Con
     labels=true>
 </BarChart>
 
+### Deck Summary
 
+```DeckSummary
+SELECT DISTINCT
+       ch.Owner
+      ,ch.Deck
+      ,COUNT(md.Match) AS Wins
+      ,MIN(md.Turns) AS FastestWin
+      ,MAX(md.Turns) AS SlowestWin
+      ,AVG(md.Turns) AS AverageTurnsToWin
+--      ,md."Player Count"
+--      ,md.Turns
+--      ,md."Match Type"
+--      ,md."Win Type"
+--      ,md."Match Rating"
+FROM MatchDetails.MatchDetails AS md
+JOIN CommanderHistory.CommanderHistory AS ch ON md.Match = ch.Match AND ch.Place = 1
+GROUP BY Owner, Deck
+```
 
 ### Full Match Details
 
